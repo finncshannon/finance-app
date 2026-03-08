@@ -1,0 +1,95 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.stmtBtn {
+  padding: 4px 12px;
+  font-size: 11px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-medium);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.stmtBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.stmtBtnActive {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+
+.stmtBtnActive:hover {
+  background: var(--accent-hover);
+}
+
+.separator {
+  width: 1px;
+  height: 20px;
+  background: var(--border-medium);
+}
+
+.toggleGroup {
+  display: flex;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.toggleBtn {
+  padding: 4px 12px;
+  font-size: 11px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-sans);
+}
+
+.toggleBtn:hover {
+  background: var(--bg-hover);
+}
+
+.toggleBtnActive {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}

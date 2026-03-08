@@ -1,0 +1,392 @@
+/* DCFView layout */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Scenario pill tabs */
+.scenarioTabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  width: fit-content;
+}
+
+.scenarioBtn {
+  padding: 5px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.scenarioBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.scenarioBtnActive {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.scenarioBtnActive:hover {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+
+/* Projection table */
+.tableSection {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.sectionTitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  padding: var(--space-3) var(--space-3) var(--space-1);
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.projectionTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: auto;
+}
+
+.projectionTable th {
+  padding: 4px 10px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  background: var(--bg-table-header);
+  border-bottom: 1px solid var(--border-medium);
+  border-right: 1px solid var(--border-subtle);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.projectionTable th:first-child {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--bg-table-header);
+  min-width: 120px;
+}
+
+.projectionTable td {
+  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  text-align: right;
+  border-right: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.projectionTable td:first-child {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.projectionTable td:last-child,
+.projectionTable th:last-child {
+  border-right: none;
+}
+
+.projectionTable tr:nth-child(odd) td {
+  background: var(--bg-table-odd);
+}
+
+.projectionTable tr:nth-child(even) td {
+  background: var(--bg-table-even);
+}
+
+/* Sticky first col needs explicit bg on odd/even */
+.projectionTable tr:nth-child(odd) td:first-child {
+  background: var(--bg-table-odd);
+}
+
+.projectionTable tr:nth-child(even) td:first-child {
+  background: var(--bg-table-even);
+}
+
+.sectionSeparator td {
+  height: 2px;
+  padding: 0;
+  border-bottom: 1px solid var(--border-medium);
+  background: var(--bg-primary) !important;
+}
+
+.negativeValue {
+  color: var(--color-negative);
+}
+
+/* Key outputs panel */
+.keyOutputsPanel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Headline cards */
+.headlineCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: 0;
+}
+
+.headlineCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-4) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.headlineCardAccent {
+  border-color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.headlineLabel {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+}
+
+.headlineValue {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.upsideTag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-positive);
+}
+
+.downsideTag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-negative);
+}
+
+/* Step-down calculation */
+.stepDown {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4);
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+  padding: var(--space-1) 0;
+}
+
+.stepLabel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.stepValue {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  min-width: 100px;
+}
+
+.stepAnnotation {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-left: var(--space-2);
+  min-width: 80px;
+  text-align: right;
+}
+
+.stepRowSubtotal {
+  composes: stepRow;
+  border-top: 1px solid var(--border-medium);
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.stepRowFinal {
+  composes: stepRow;
+  border-top: 2px solid var(--text-primary);
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.stepRowFinal .stepLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stepRowFinal .stepValue {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Reference bar */
+.refBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-subtle);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.refItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.refLabel {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+}
+
+.refValue {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Waterfall tooltip */
+.waterfallTooltip {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  min-width: 180px;
+}
+
+.tooltipLabel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding: 1px 0;
+}
+
+.tooltipRow span:last-child {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Export disabled */
+.exportDisabled {
+  padding: 4px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .headlineCards {
+    grid-template-columns: 1fr;
+  }
+
+  .refBar {
+    flex-wrap: wrap;
+  }
+}
+
+/* Waterfall chart */
+.waterfallSection {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-3) var(--space-3);
+}
+
+.waterfallTitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+  padding-left: var(--space-1);
+}

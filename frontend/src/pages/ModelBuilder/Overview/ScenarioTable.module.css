@@ -1,0 +1,141 @@
+/* Scenario Comparison Table */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: auto;
+}
+
+/* Header */
+.thead {
+  background: var(--bg-tertiary);
+}
+
+.th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-medium);
+  border-right: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.th:last-child {
+  border-right: none;
+}
+
+.thLeft {
+  text-align: left;
+}
+
+/* Body */
+.row {
+  height: 30px;
+  transition: background 0.1s ease;
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.rowOdd {
+  background: var(--bg-secondary);
+}
+
+.rowEven {
+  background: var(--bg-primary);
+}
+
+.rowComposite {
+  background: var(--accent-subtle) !important;
+  border-top: 1px solid var(--border-medium);
+}
+
+.rowComposite:hover {
+  background: var(--accent-subtle) !important;
+}
+
+/* Cells */
+.td {
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-primary);
+  text-align: right;
+  border-right: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.td:last-child {
+  border-right: none;
+}
+
+.tdModel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.tdModelComposite {
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+/* Upside coloring */
+.positive {
+  color: var(--color-positive);
+}
+
+.negative {
+  color: var(--color-negative);
+}
+
+.neutral {
+  color: var(--text-secondary);
+}
+
+/* Weight cell */
+.weight {
+  color: var(--text-secondary);
+}
+
+/* Confidence cell */
+.confidence {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}

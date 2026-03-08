@@ -1,0 +1,322 @@
+/* Data Table Panel (2D Sensitivity Grid) styles */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.metaItem {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.metaValue {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Variable labels */
+.variableLabels {
+  display: flex;
+  gap: var(--space-4);
+  padding: 0 var(--space-2);
+}
+
+.variableTag {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.variableAxis {
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  font-weight: 600;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Table wrapper */
+.tableWrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-secondary);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Header cells */
+.cornerCell {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-medium);
+  border-bottom: 1px solid var(--border-medium);
+  padding: var(--space-2);
+  width: 80px;
+  min-width: 80px;
+}
+
+.colHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: var(--space-2) var(--space-1);
+  text-align: center;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-medium);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.colHeaderLabel {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: var(--space-1) var(--space-1);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.rowHeader {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  padding: var(--space-2) var(--space-2);
+  text-align: right;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-medium);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Data cells */
+.cell {
+  padding: var(--space-1) var(--space-1);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  transition: border-color var(--transition-micro);
+  cursor: default;
+  min-width: 72px;
+}
+
+.cell:hover {
+  border-color: var(--text-primary);
+}
+
+.cellBase {
+  border: 2px solid var(--accent-primary) !important;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.3);
+  font-weight: 700;
+}
+
+/* Color mapping for cells */
+.cellBrightGreen {
+  background-color: #16a34a;
+  color: #fff;
+}
+
+.cellGreen {
+  background-color: #22c55e;
+  color: #fff;
+}
+
+.cellLightGreen {
+  background-color: #86efac;
+  color: #0D0D0D;
+}
+
+.cellNeutral {
+  background-color: transparent;
+}
+
+.cellLightRed {
+  background-color: #fca5a5;
+  color: #0D0D0D;
+}
+
+.cellRed {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+.cellBrightRed {
+  background-color: #dc2626;
+  color: #fff;
+}
+
+/* Upside display */
+.cellUpside {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-top: 1px;
+}
+
+/* Loading & Error */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  min-height: 300px;
+}
+
+.loadingText {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.error {
+  padding: var(--space-4);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-md);
+  color: var(--color-negative);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+/* Controls panel */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.controlLabel {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  min-width: 60px;
+}
+.select {
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  outline: none;
+  min-width: 120px;
+}
+.rangeInput {
+  width: 72px;
+  padding: 4px 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: right;
+  outline: none;
+}
+.rangeInput:focus { border-color: var(--accent-primary); }
+.rangeSeparator {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+.gridSelect {
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  outline: none;
+}
+.generateBtn {
+  padding: 5px 14px;
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.generateBtn:hover { opacity: 0.85; }
+.presetRow {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.presetBtn {
+  padding: 3px 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.presetBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}

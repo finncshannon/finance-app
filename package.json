@@ -1,0 +1,27 @@
+{
+  "name": "finance-app",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Professional-grade desktop finance application for valuation modeling, stock screening, portfolio tracking, and company research.",
+  "workspaces": [
+    "electron",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:electron": "cd electron && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build:electron": "cd electron && npm run build",
+    "build": "npm run build:frontend && npm run build:electron",
+    "bundle-python": "node scripts/bundle-python.js",
+    "package": "npm run build:frontend && npm run build:electron && cd electron && npx electron-builder --config electron-builder.yml --win",
+    "package:full": "npm run bundle-python && npm run package",
+    "release": "npm run bundle-python && npm run build:frontend && npm run build:electron && cd electron && npx electron-builder --config electron-builder.yml --win --publish always",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint": "npm run lint:frontend",
+    "format": "cd frontend && npm run format"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,517 @@
+/* RevBasedView layout */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Section card */
+.section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.sectionPadded {
+  padding: var(--space-3) var(--space-4);
+}
+
+.sectionTitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  padding: var(--space-3) var(--space-3) var(--space-1);
+}
+
+/* =============================================
+   Key Outputs Section
+   ============================================= */
+
+.keyOutputsSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.keyCardsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.keyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.keyCardLabel {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+}
+
+.keyCardValue {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.upsideCard {
+  /* Base styles for upside card — color set by modifier */
+}
+
+.upsideCardPositive {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(34, 197, 94, 0.06) 100%);
+}
+
+.upsideCardPositive .keyCardValue {
+  color: var(--color-positive);
+}
+
+.upsideCardNegative {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(239, 68, 68, 0.06) 100%);
+}
+
+.upsideCardNegative .keyCardValue {
+  color: var(--color-negative);
+}
+
+/* =============================================
+   Growth Metrics Grid
+   ============================================= */
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3);
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.metricName {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+}
+
+.metricBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badgePass {
+  background: var(--color-positive-subtle);
+  color: var(--color-positive);
+}
+
+.badgeMarginal {
+  background: var(--color-warning-subtle);
+  color: var(--color-warning);
+}
+
+.badgeFail {
+  background: var(--color-negative-subtle);
+  color: var(--color-negative);
+}
+
+.metricValue {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metricSub {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+/* =============================================
+   Chart Sections
+   ============================================= */
+
+.chartSection {
+  /* Inherits .section + .sectionPadded */
+}
+
+.chartTitle {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+/* =============================================
+   Scenario Tabs
+   ============================================= */
+
+.scenarioTabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  width: fit-content;
+}
+
+.scenarioBtn {
+  padding: 5px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.scenarioBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.scenarioBtnActive {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.scenarioBtnActive:hover {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+
+/* =============================================
+   Revenue Projection Table
+   ============================================= */
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.projTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.projTable th {
+  padding: 4px 10px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  background: var(--bg-table-header);
+  border-bottom: 1px solid var(--border-medium);
+  border-right: 1px solid var(--border-subtle);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.projTable th:first-child {
+  text-align: left;
+}
+
+.projTable th:last-child {
+  border-right: none;
+}
+
+.projTable td {
+  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  text-align: right;
+  border-right: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.projTable td:first-child {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.projTable td:last-child {
+  border-right: none;
+}
+
+.projTable tr:nth-child(odd) td {
+  background: var(--bg-table-odd);
+}
+
+.projTable tr:nth-child(even) td {
+  background: var(--bg-table-even);
+}
+
+/* =============================================
+   Scenario Comparison Table
+   ============================================= */
+
+.comparisonTable {
+  margin-bottom: var(--space-4);
+}
+
+.comparisonTable th {
+  padding: 6px 12px;
+}
+
+.comparisonTable td {
+  padding: 6px 12px;
+}
+
+.scenarioDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* =============================================
+   Football Field Visualization
+   ============================================= */
+
+.footballFieldContainer {
+  padding: var(--space-4) var(--space-3) var(--space-6);
+}
+
+.footballFieldTrack {
+  position: relative;
+  height: 32px;
+  background: var(--bg-tertiary);
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  margin-top: var(--space-4);
+}
+
+.footballFieldBar {
+  position: absolute;
+  top: 4px;
+  height: 24px;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(96, 165, 250, 0.35) 0%,
+    rgba(99, 102, 241, 0.35) 50%,
+    rgba(34, 197, 94, 0.35) 100%
+  );
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  transition: left 0.3s ease, width 0.3s ease;
+}
+
+.footballFieldCurrentLine {
+  position: absolute;
+  top: -6px;
+  bottom: -24px;
+  width: 0;
+  border-left: 2px dashed var(--text-tertiary);
+  transform: translateX(-1px);
+  z-index: 3;
+}
+
+.footballFieldCurrentLabel {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  background: var(--bg-secondary);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.footballFieldMarker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+  z-index: 2;
+  transition: left 0.3s ease;
+}
+
+.footballFieldMarkerBear {
+  background: #60A5FA;
+}
+
+.footballFieldMarkerBase {
+  background: #6366F1;
+}
+
+.footballFieldMarkerBull {
+  background: #22C55E;
+}
+
+.footballFieldLabel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* =============================================
+   Shared utility classes
+   ============================================= */
+
+.positive {
+  color: var(--color-positive);
+}
+
+.negative {
+  color: var(--color-negative);
+}
+
+/* Old scenario comparison — kept for backward compat but no longer rendered */
+.scenarioComparison {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.scenarioCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.scenarioColLabel {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+}
+
+.scenarioColPrice {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.scenarioBar {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.scenarioBarFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.bearColor {
+  background: var(--color-negative);
+}
+
+.baseColor {
+  background: var(--accent-primary);
+}
+
+.bullColor {
+  background: var(--color-positive);
+}
+
+.scenarioColUpside {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* =============================================
+   Responsive
+   ============================================= */
+
+@media (max-width: 640px) {
+  .keyCardsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .scenarioComparison {
+    grid-template-columns: 1fr;
+  }
+}

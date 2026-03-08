@@ -1,0 +1,100 @@
+.row {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  margin-bottom: var(--space-2);
+  padding: var(--space-1);
+}
+
+.metricCol {
+  flex: 1;
+  min-width: 0;
+}
+
+.opSelect {
+  width: 72px;
+  padding: 4px 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  transition: border-color var(--transition-micro);
+}
+
+.valueInput {
+  width: 70px;
+  padding: 4px 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  text-align: right;
+  transition: border-color var(--transition-micro);
+}
+
+.valueInput:focus,
+.opSelect:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+/* Hide number spinners */
+.valueInput::-webkit-inner-spin-button,
+.valueInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.valueInput[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.valueGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.valueSuffix {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  min-width: 12px;
+}
+
+.betweenGroup {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.betweenSep {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  padding: 0 2px;
+}
+
+.removeBtn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: all var(--transition-micro);
+}
+
+.removeBtn:hover {
+  color: var(--color-negative);
+  background: var(--bg-hover);
+}

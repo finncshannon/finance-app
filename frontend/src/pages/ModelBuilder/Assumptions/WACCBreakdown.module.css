@@ -1,0 +1,225 @@
+/* WACCBreakdown component styles */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+/* Sub-section */
+.subSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.subSectionTitle {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-1);
+}
+
+/* Field rows */
+.fieldRow {
+  display: flex;
+  align-items: center;
+  padding: 4px var(--space-2);
+  min-height: 30px;
+  border-left: 3px solid transparent;
+  transition: border-color var(--transition-micro);
+}
+
+.fieldRowOverridden {
+  border-left-color: var(--accent-primary);
+}
+
+.fieldLabel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  min-width: 160px;
+}
+
+.fieldSpacer {
+  flex: 1;
+  border-bottom: 1px dotted var(--border-subtle);
+  margin: 0 var(--space-2);
+  min-width: 20px;
+  align-self: flex-end;
+  margin-bottom: 5px;
+}
+
+.fieldInput {
+  width: 64px;
+  padding: 2px 6px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: right;
+  outline: none;
+  transition: border-color var(--transition-micro);
+}
+
+.fieldInput:focus {
+  border-color: var(--accent-primary);
+}
+
+.fieldUnit {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+  min-width: 14px;
+}
+
+.fieldValue {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  min-width: 64px;
+}
+
+.fieldValueReadonly {
+  color: var(--text-tertiary);
+}
+
+.fieldSource {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-style: italic;
+  margin-left: var(--space-2);
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: right;
+}
+
+.overrideBadge {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.1);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  margin-left: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Computed result row */
+.computedResult {
+  display: flex;
+  align-items: center;
+  padding: 6px var(--space-2);
+  min-height: 32px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-1);
+}
+
+.computedPrefix {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-right: 4px;
+}
+
+.computedLabel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.computedValue {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin-left: auto;
+}
+
+.computedFormula {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-left: var(--space-2);
+}
+
+/* Final WACC formula display */
+.formulaDisplay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-2);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.formulaLabel {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.formulaValue {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.formulaEquation {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* Linked weight note */
+.linkedNote {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-style: italic;
+  padding: 2px var(--space-2);
+}
+
+/* Warnings */
+.warningsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-1) var(--space-2);
+}
+
+.warningItem {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--color-warning);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.warningIcon {
+  font-size: 12px;
+}

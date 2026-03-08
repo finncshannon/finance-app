@@ -1,0 +1,200 @@
+/* ── HoldingsTable ─────────────────────────────────── */
+
+.wrapper {
+  position: relative;
+  flex: 1;
+  overflow: auto;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--space-2) var(--space-4);
+  gap: var(--space-2);
+}
+
+.groupLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.groupSelect {
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  outline: none;
+}
+
+.groupSelect:focus {
+  border-color: var(--accent-primary);
+}
+
+/* ── Table ── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--font-sans);
+}
+
+.th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+  background: var(--bg-table-header);
+  border-bottom: 1px solid var(--border-medium);
+  padding: 6px 10px;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition-micro);
+}
+
+.th:hover {
+  color: var(--text-primary);
+}
+
+.thRight {
+  composes: th;
+  text-align: right;
+}
+
+.sortArrow {
+  font-size: 9px;
+  margin-left: 2px;
+}
+
+/* ── Rows ── */
+.tr {
+  cursor: pointer;
+  transition: background var(--transition-micro);
+}
+
+.trOdd {
+  composes: tr;
+  background: var(--bg-table-odd);
+}
+
+.trEven {
+  composes: tr;
+  background: var(--bg-table-even);
+}
+
+.tr:hover {
+  background: var(--bg-hover);
+}
+
+.trExpanded {
+  background: var(--bg-hover) !important;
+}
+
+.td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.tdRight {
+  composes: td;
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+.ticker {
+  composes: td;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.name {
+  composes: td;
+  color: var(--text-secondary);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Group Header ── */
+.groupRow {
+  background: var(--bg-tertiary);
+}
+
+.groupCell {
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-medium);
+}
+
+/* ── Footer ── */
+.tfoot td {
+  padding: 8px 10px;
+  font-weight: 600;
+  font-size: 12px;
+  border-top: 2px solid var(--border-medium);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+/* ── Context Menu ── */
+.contextMenu {
+  position: fixed;
+  z-index: 500;
+  min-width: 180px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--space-1) 0;
+  box-shadow: 0 4px 16px var(--shadow-elevated);
+}
+
+.contextItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-2) var(--space-4);
+  font-size: 12px;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-micro);
+}
+
+.contextItem:hover {
+  background: var(--bg-hover);
+}
+
+.contextDanger {
+  composes: contextItem;
+  color: var(--color-negative);
+}
+
+/* ── Expanded Detail Row ── */
+.detailRow {
+  background: var(--bg-tertiary);
+}
+
+.detailCell {
+  padding: 0;
+  border-bottom: 1px solid var(--border-medium);
+}

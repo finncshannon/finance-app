@@ -1,0 +1,380 @@
+/* Football Field horizontal bar chart — v2 overhaul */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.legendDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.legendDotBear { background: #60A5FA; }
+.legendDotBase { background: var(--text-primary); }
+.legendDotBull { background: var(--accent-primary); }
+.legendDotPrice { background: var(--color-warning); }
+
+/* Scale axis at top */
+.scaleRow {
+  position: relative;
+  height: 24px;
+  margin-left: 160px;
+  margin-right: 90px;
+  margin-bottom: var(--space-1);
+}
+
+.scaleTick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* Chart body — contains gridlines + rows */
+.chartBody {
+  position: relative;
+}
+
+/* Gridlines */
+.gridline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-subtle);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Each model row */
+.row {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.rowComposite {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.label {
+  flex: 0 0 160px;
+  display: flex;
+  flex-direction: column;
+  padding-right: var(--space-2);
+}
+
+.labelName {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.labelNameComposite {
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.labelWeight {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+/* Bar track */
+.track {
+  flex: 1;
+  position: relative;
+  height: 28px;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: crosshair;
+}
+
+.trackComposite {
+  height: 36px;
+}
+
+/* The horizontal range bar */
+.bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #60A5FA, #1D4ED8);
+  opacity: 0.8;
+  transition: opacity 0.15s ease;
+}
+
+.bar:hover {
+  opacity: 0.95;
+}
+
+.barComposite {
+  background: linear-gradient(90deg, #93C5FD, #2563EB);
+  opacity: 0.9;
+  height: 36px;
+}
+
+.barComposite:hover {
+  opacity: 1;
+}
+
+/* Base marker */
+.baseMarker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-1px, -50%);
+  width: 2px;
+  height: 28px;
+  background: var(--text-primary);
+  z-index: 2;
+}
+
+.baseMarkerComposite {
+  height: 36px;
+}
+
+/* Current price vertical line */
+.priceLine {
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: calc(100% + 8px);
+  border-left: 1.5px dashed var(--color-warning);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Price labels on bars */
+.priceOnBar {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-tertiary);
+  transform: translateX(-50%);
+  top: -14px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.priceOnBarBase {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transform: translateX(-50%);
+  top: -14px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Price values on right side — upside % */
+.priceText {
+  flex: 0 0 90px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding-left: var(--space-2);
+  white-space: nowrap;
+}
+
+.priceTextComposite {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.upsidePos {
+  color: var(--color-positive);
+}
+
+.upsideNeg {
+  color: var(--color-negative);
+}
+
+/* Tooltip on hover */
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 4px 12px var(--shadow-elevated, rgba(0,0,0,0.15));
+  min-width: 180px;
+}
+
+.tooltipTitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.tooltipDivider {
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 4px;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Current price label at bottom */
+.currentLabel {
+  margin-top: var(--space-1);
+}
+
+.currentLabelInner {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-warning);
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Composite detail summary */
+.compositeSummary {
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.summaryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.summaryLabel {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+}
+
+.summaryValue {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.summaryValueBold {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.summaryValueWarning {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-warning);
+}
+
+.summarySeparator {
+  width: 1px;
+  height: 16px;
+  background: var(--border-subtle);
+}
+
+.summaryBadge {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.badgeStrong {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--color-positive);
+}
+
+.badgeModerate {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--accent-primary);
+}
+
+.badgeWeak {
+  background: rgba(234, 179, 8, 0.12);
+  color: var(--color-warning);
+}
+
+.badgeSignificant {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--color-negative);
+}

@@ -1,0 +1,419 @@
+/* HistoricalDataTab — Transposed financial table with sub-tabs */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  max-width: 1400px;
+}
+
+/* Sub-tab bar row (tabs + inspect toggle) */
+.subTabBarRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.subTabBar {
+  display: flex;
+  gap: var(--space-1);
+  padding: 2px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  width: fit-content;
+}
+
+.subTab {
+  padding: 6px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-micro);
+  white-space: nowrap;
+}
+
+.subTab:hover {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.subTabActive {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Table wrapper */
+.tableWrapper {
+  position: relative;
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: max-content;
+}
+
+/* Sticky first column */
+.table th:first-child,
+.table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+}
+
+/* Header row */
+.headerRow th {
+  background: var(--bg-table-header);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  padding: var(--space-2) var(--space-3);
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.headerRow th:first-child {
+  text-align: left;
+  background: var(--bg-table-header);
+}
+
+/* Data rows */
+.dataRow td {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-primary);
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dataRow td:first-child {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  color: var(--text-secondary);
+}
+
+/* Alternating row backgrounds */
+.rowOdd td {
+  background: var(--bg-table-odd);
+}
+
+.rowEven td {
+  background: var(--bg-table-even);
+}
+
+/* Section separator row */
+.sectionSeparator td {
+  background: var(--bg-tertiary) !important;
+  border-top: 1px solid var(--border-medium);
+}
+
+.sectionSeparator td:first-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Negative values */
+.negative {
+  color: var(--color-negative);
+}
+
+/* Null / missing */
+.missing {
+  color: var(--text-tertiary);
+}
+
+/* Year column widths */
+.yearCol {
+  width: 110px;
+  min-width: 110px;
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: var(--space-3);
+}
+
+.loadingText {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* Error state */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: var(--space-2);
+}
+
+.errorText {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-negative);
+}
+
+.retryBtn {
+  padding: 4px 16px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+
+.retryBtn:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+/* Empty / no-ticker state */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--text-tertiary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+/* ===== Inspect toggle (Apple-style slider) ===== */
+
+.inspectToggle {
+  flex-shrink: 0;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggleInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.2s ease;
+}
+
+.toggleSlider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  transition: all 0.2s ease;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.toggleInput:checked + .toggleSlider::after {
+  left: 18px;
+  background: white;
+}
+
+.toggleText {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ===== Glass bubble (inspect mode — populated cells) ===== */
+
+.glassBubble {
+  position: relative;
+  background: rgba(59, 130, 246, 0.04) !important;
+  border: 1px solid rgba(59, 130, 246, 0.08);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.glassBubble:hover {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border-color: rgba(59, 130, 246, 0.15);
+}
+
+/* ===== Missing cell indicators (inspect mode) ===== */
+
+.missingCritical {
+  position: relative;
+}
+
+.missingCritical::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-negative);
+}
+
+.missingImportant {
+  position: relative;
+}
+
+.missingImportant::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-warning);
+}
+
+/* ===== Popover ===== */
+
+.popover {
+  position: absolute;
+  z-index: 20;
+  width: 260px;
+  padding: 10px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.popoverTitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.popoverValue {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.popoverDivider {
+  border-bottom: 1px solid var(--border-subtle);
+  margin: 6px 0;
+}
+
+.popoverRow {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.popoverEngineHeader {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.popoverEngineRow {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding-left: 8px;
+}
+
+.popoverEngineRow::before {
+  content: '\2022 ';
+}
+
+/* ===== Data freshness ===== */
+
+.freshnessRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.freshnessText {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.refreshBtn {
+  padding: 2px 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color var(--transition-micro);
+}
+
+.refreshBtn:hover {
+  color: var(--accent-primary);
+}

@@ -1,0 +1,13 @@
+.container { display: flex; flex-direction: column; height: 100%; }
+.controls { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+.select { padding: 4px 8px; background: var(--bg-tertiary); border: 1px solid var(--border-medium); border-radius: var(--radius-md); color: var(--text-primary); font-size: 12px; font-family: var(--font-sans); }
+.select:focus { border-color: var(--accent-primary); outline: none; }
+.label { font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; }
+.panels { display: grid; grid-template-columns: 1fr 1fr; flex: 1; overflow: hidden; }
+.panel { overflow-y: auto; padding: var(--space-4); border-right: 1px solid var(--border-subtle); }
+.panel:last-child { border-right: none; }
+.panelTitle { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; margin-bottom: var(--space-3); }
+.paragraph { font-size: 13px; line-height: 1.6; color: var(--text-primary); margin-bottom: var(--space-3); white-space: pre-wrap; }
+.paragraphNew { background: var(--accent-subtle); border-radius: var(--radius-sm); padding: var(--space-1); }
+.paragraphRemoved { background: var(--color-negative-subtle); border-radius: var(--radius-sm); padding: var(--space-1); }
+.empty { display: flex; align-items: center; justify-content: center; flex: 1; color: var(--text-tertiary); font-size: 13px; }

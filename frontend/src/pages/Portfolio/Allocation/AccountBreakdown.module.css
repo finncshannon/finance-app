@@ -1,0 +1,120 @@
+/* ── AccountBreakdown ──────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ── Section Header ── */
+.section {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: grid;
+  grid-template-columns: 16px 1fr auto auto;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-tertiary);
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-sans);
+  transition: background var(--transition-micro);
+}
+
+.sectionHeader:hover {
+  background: var(--bg-hover);
+}
+
+.chevron {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  line-height: 1;
+}
+
+.acctName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.acctValue {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.acctWeight {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 48px;
+  text-align: right;
+}
+
+/* ── Position List ── */
+.positionList {
+  padding: var(--space-1) 0;
+}
+
+.positionRow {
+  display: grid;
+  grid-template-columns: 80px 1fr auto auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) var(--space-2) calc(var(--space-4) + 16px);
+  font-size: 12px;
+  transition: background var(--transition-micro);
+}
+
+.positionRow:hover {
+  background: var(--bg-hover);
+}
+
+.posTicker {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.posShares {
+  color: var(--text-secondary);
+}
+
+.posValue {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.posGain {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  white-space: nowrap;
+  text-align: right;
+  min-width: 56px;
+}
+
+/* ── More Row ── */
+.moreRow {
+  padding: var(--space-2) var(--space-4) var(--space-2) calc(var(--space-4) + 16px);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* ── Empty ── */
+.empty {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  padding: var(--space-4) 0;
+}

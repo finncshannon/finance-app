@@ -1,0 +1,42 @@
+/* ── DividendCalendar ──────────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 100px 90px 1fr;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.month {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.total {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-positive);
+  text-align: right;
+}
+
+.detail {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

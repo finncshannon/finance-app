@@ -1,0 +1,23 @@
+{
+  "name": "finance-app-electron",
+  "version": "2.0.0",
+  "private": true,
+  "author": "Finn",
+  "description": "Electron main process for Finance App",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "tsc && electron dist/main.js",
+    "build": "tsc",
+    "package": "electron-builder --config electron-builder.yml",
+    "package:win": "electron-builder --config electron-builder.yml --win",
+    "package:mac": "electron-builder --config electron-builder.yml --mac"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.3"
+  }
+}

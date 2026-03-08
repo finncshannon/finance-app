@@ -1,0 +1,56 @@
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.value {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.actions {
+  padding-top: 12px;
+}
+
+.clearBtn {
+  padding: 6px 16px;
+  font-size: 11px;
+  font-family: var(--font-sans);
+  background: var(--color-negative);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-on-accent);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.clearBtn:hover {
+  opacity: 0.9;
+}
+
+.clearBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--color-positive);
+}

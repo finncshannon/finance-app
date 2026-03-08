@@ -1,0 +1,87 @@
+/* Sensitivity tab orchestrator layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Inner pill/segment tab bar */
+.tabBar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.segmentControl {
+  display: flex;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  gap: 2px;
+}
+
+.segmentBtn {
+  padding: 5px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+  white-space: nowrap;
+}
+
+.segmentBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.segmentBtnActive {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.segmentBtnActive:hover {
+  background: var(--accent-hover);
+  color: var(--text-on-accent);
+}
+
+/* Panel area */
+.panelArea {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+/* Shared empty / no-ticker state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  gap: var(--space-3);
+}
+
+.emptyTitle {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.emptyDesc {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}

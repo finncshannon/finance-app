@@ -1,0 +1,5 @@
+.nav { width: 180px; flex-shrink: 0; border-right: 1px solid var(--border-subtle); overflow-y: auto; background: var(--bg-secondary); }
+.item { display: block; width: 100%; padding: 8px 12px; font-size: 11px; color: var(--text-secondary); background: none; border: none; border-left: 3px solid transparent; cursor: pointer; text-align: left; font-family: var(--font-sans); }
+.item:hover { background: var(--bg-hover); color: var(--text-primary); }
+.itemActive { color: var(--text-primary); border-left-color: var(--accent-primary); background: var(--bg-tertiary); }
+.wordCount { display: block; font-size: 9px; color: var(--text-tertiary); margin-top: 2px; }

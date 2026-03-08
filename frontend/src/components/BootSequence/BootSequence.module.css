@@ -1,0 +1,152 @@
+/* BootSequence — eDEX-UI inspired startup animation */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg-primary, #0D0D0D);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 48px 56px;
+  pointer-events: none;
+}
+
+/* ── Phase transitions ── */
+
+.phaseBlack {
+  opacity: 1;
+}
+
+.phaseTerminal {
+  opacity: 1;
+}
+
+.phaseShift {
+  opacity: 1;
+}
+
+.phaseFadeOut {
+  opacity: 0;
+  transition: opacity 600ms ease-out;
+}
+
+/* ── Terminal block ── */
+
+.terminal {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-tertiary, #737373);
+  white-space: pre;
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+
+.terminalShifted {
+  opacity: 0.3;
+  transform: translateY(-24px);
+}
+
+/* ── Individual boot line ── */
+
+.bootLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.bootLineVisible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 120ms ease-out, transform 120ms ease-out;
+}
+
+.linePrefix {
+  color: var(--text-tertiary, #737373);
+  flex-shrink: 0;
+}
+
+.lineLabel {
+  color: var(--text-tertiary, #737373);
+  flex-shrink: 0;
+}
+
+.checkmark {
+  color: var(--accent-primary, #3B82F6);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.checkmarkVisible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Header lines (title + divider) ── */
+
+.headerLine {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.headerLineVisible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 120ms ease-out, transform 120ms ease-out;
+}
+
+.title {
+  color: var(--text-tertiary, #737373);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.divider {
+  color: var(--text-tertiary, #737373);
+  opacity: 0.5;
+}
+
+.statusLine {
+  color: var(--text-tertiary, #737373);
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.statusLineVisible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 120ms ease-out, transform 120ms ease-out;
+}
+
+/* ── Blinking cursor ── */
+
+.cursor {
+  animation: cursorBlink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Completion line ── */
+
+.completionLine {
+  color: var(--accent-primary, #3B82F6);
+  opacity: 0;
+  transform: translateY(4px);
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.completionLineVisible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}

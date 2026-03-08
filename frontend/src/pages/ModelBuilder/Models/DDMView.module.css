@@ -1,0 +1,450 @@
+/* DDMView layout */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Not-applicable guard */
+.notApplicable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: var(--space-3);
+  padding: var(--space-8);
+}
+
+.notApplicableIcon {
+  font-size: 28px;
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.notApplicableText {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+/* Scenario pill tabs */
+.scenarioTabs {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  width: fit-content;
+}
+
+.scenarioBtn {
+  padding: 5px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.scenarioBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.scenarioBtnActive {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.scenarioBtnActive:hover {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+
+/* ── Chart sections ── */
+.chartSection {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-3) var(--space-2);
+}
+
+.chartTitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  padding: 0 0 var(--space-2);
+}
+
+/* Dividend schedule table */
+.tableSection {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.sectionTitle {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  padding: var(--space-3) var(--space-3) var(--space-1);
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.scheduleTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.scheduleTable th {
+  padding: 4px 10px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  background: var(--bg-table-header);
+  border-bottom: 1px solid var(--border-medium);
+  border-right: 1px solid var(--border-subtle);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.scheduleTable th:first-child {
+  text-align: center;
+}
+
+.scheduleTable th:nth-child(2) {
+  text-align: left;
+}
+
+.scheduleTable th:last-child {
+  border-right: none;
+}
+
+.scheduleTable td {
+  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  text-align: right;
+  border-right: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.scheduleTable td:first-child {
+  text-align: center;
+}
+
+.scheduleTable td:last-child {
+  border-right: none;
+}
+
+.scheduleTable tr:nth-child(odd) td {
+  background: var(--bg-table-odd);
+}
+
+.scheduleTable tr:nth-child(even) td {
+  background: var(--bg-table-even);
+}
+
+/* Stage badges */
+.stageBadge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stageHighGrowth {
+  background: var(--accent-subtle);
+  color: #60A5FA;
+}
+
+.stageTransition {
+  background: var(--color-warning-subtle);
+  color: #FBBF24;
+}
+
+.stageTerminal {
+  background: var(--color-positive-subtle);
+  color: #4ADE80;
+}
+
+/* ── Expanded Key Outputs Panel ── */
+.keyOutputsPanel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+.keyCardsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.keyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-3) var(--space-2);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.keyCardLabel {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+}
+
+.keyCardValue {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Step-down decomposition list */
+.stepDown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0 var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.stepDownRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 3px 0;
+}
+
+.stepDownLabel {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stepDownDots {
+  flex: 1;
+  border-bottom: 1px dotted var(--border-medium);
+  margin-bottom: 3px;
+  min-width: 20px;
+}
+
+.stepDownValue {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.stepDownPct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  margin-left: 4px;
+}
+
+.stepDownSeparator {
+  border-top: 1px solid var(--border-medium);
+  margin: var(--space-1) 0;
+}
+
+/* Reference bar */
+.referenceBar {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.referenceItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.referenceLabel {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+}
+
+.referenceValue {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Sustainability panel */
+.sustainabilityPanel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+}
+
+.healthBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.healthBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.healthHealthy {
+  background: var(--color-positive-subtle);
+  color: var(--color-positive);
+}
+
+.healthCaution {
+  background: var(--color-warning-subtle);
+  color: var(--color-warning);
+}
+
+.healthAtRisk {
+  background: var(--color-negative-subtle);
+  color: var(--color-negative);
+}
+
+.metricsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.metricRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.metricRow:last-child {
+  border-bottom: none;
+}
+
+.metricName {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex: 1;
+  min-width: 0;
+}
+
+.metricValue {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  min-width: 60px;
+  text-align: right;
+}
+
+.statusBadge {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusGreen {
+  background: var(--color-positive);
+}
+
+.statusYellow {
+  background: var(--color-warning);
+}
+
+.statusRed {
+  background: var(--color-negative);
+}
+
+/* ── Progress bars for sustainability metrics ── */
+.progressBarBg {
+  display: inline-block;
+  width: 60px;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.progressBarFill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Tooltip cursor for metric names */
+.metricTooltip {
+  cursor: help;
+}

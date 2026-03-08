@@ -1,0 +1,15 @@
+{
+  "sec_contact_email": "",
+  "universe": "sp500",
+  "cache_dir": "data/_cache",
+  "filing_sections": ["item1", "item1a", "item7"],
+  "max_concurrent_downloads": 1,
+  "search_defaults": {
+    "sector_filter": "All",
+    "min_match_score": 10,
+    "max_results": 100
+  },
+  "export_dir": "data/search_results",
+  "last_data_refresh": "",
+  "version": "1.0.0"
+}

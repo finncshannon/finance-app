@@ -1,0 +1,412 @@
+/* AssumptionsTab — main container */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Header row */
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.title {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.headerSpacer {
+  flex: 1;
+}
+
+.confidenceOverall {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.confGreen {
+  background: var(--color-positive-subtle);
+  color: var(--color-positive);
+}
+
+.confYellow {
+  background: var(--color-warning-subtle);
+  color: var(--color-warning);
+}
+
+.confOrange {
+  background: #FF980020;
+  color: #FF9800;
+}
+
+.confRed {
+  background: var(--color-negative-subtle);
+  color: var(--color-negative);
+}
+
+.btnAccent {
+  padding: 5px 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-micro);
+  white-space: nowrap;
+}
+
+.btnAccent:hover {
+  background: var(--accent-hover);
+}
+
+.btnAccent:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnDanger {
+  padding: 5px 14px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-negative);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+  white-space: nowrap;
+}
+
+.btnDanger:hover {
+  background: var(--color-negative-subtle);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.btnDanger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Scenario tab bar */
+.scenarioBar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.scenarioControl {
+  display: flex;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 2px;
+  gap: 2px;
+}
+
+.scenarioBtn {
+  padding: 5px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+  white-space: nowrap;
+}
+
+.scenarioBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.scenarioBtnActive {
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.scenarioBtnActive:hover {
+  background: var(--accent-hover);
+  color: var(--text-on-accent);
+}
+
+.scenarioWeight {
+  margin-left: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* Scrollable body */
+.body {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Section card */
+.section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.sectionHeader {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sectionConfidence {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 9999px;
+}
+
+.sectionReasoning {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-1) 0;
+}
+
+/* Warnings bar */
+.warnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-warning-subtle);
+  border-bottom: 1px solid var(--color-warning-subtle);
+  flex-shrink: 0;
+}
+
+.warningTag {
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-warning-subtle);
+  color: var(--color-warning);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Loading / Empty / Error states */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  height: 100%;
+  min-height: 300px;
+}
+
+.loadingText {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  gap: var(--space-3);
+}
+
+.emptyTitle {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.emptyDesc {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.error {
+  padding: var(--space-4);
+  margin: var(--space-4);
+  background: var(--color-negative-subtle);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-md);
+  color: var(--color-negative);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+/* Metadata bar at bottom */
+.metaBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.metaItem {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.metaLabel {
+  color: var(--text-tertiary);
+}
+
+.metaValue {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Collapsible section */
+.sectionHeaderClickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sectionHeaderClickable:hover {
+  background: var(--bg-hover);
+}
+
+.chevron {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  transition: transform 150ms ease;
+  display: inline-block;
+}
+
+.chevronCollapsed {
+  transform: rotate(-90deg);
+}
+
+/* Confidence warning */
+.sectionWarning {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--color-warning);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.warningIcon {
+  font-size: 12px;
+}
+
+/* Sync banner */
+.syncBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: var(--radius-md);
+}
+
+.syncBannerText {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.syncBannerApply {
+  padding: 4px 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-micro);
+  white-space: nowrap;
+}
+
+.syncBannerApply:hover {
+  background: var(--accent-hover);
+}
+
+.syncBannerDismiss {
+  padding: 4px 10px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-tertiary);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color var(--transition-micro);
+  white-space: nowrap;
+}
+
+.syncBannerDismiss:hover {
+  color: var(--text-secondary);
+}

@@ -1,0 +1,132 @@
+/* ── AttributionTable ──────────────────────────────── */
+
+.wrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--font-sans);
+}
+
+.th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+  background: var(--bg-table-header);
+  border-bottom: 1px solid var(--border-medium);
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.thRight {
+  composes: th;
+  text-align: right;
+}
+
+.tr {
+  transition: background var(--transition-micro);
+}
+
+.tr:nth-child(odd) {
+  background: var(--bg-table-odd);
+}
+
+.tr:nth-child(even) {
+  background: var(--bg-table-even);
+}
+
+.tr:hover {
+  background: var(--bg-hover);
+}
+
+.td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.tdRight {
+  composes: td;
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+/* ── Footer ── */
+.footerRow td {
+  border-top: 2px solid var(--border-medium);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.footerLabel {
+  padding: 8px 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.footerValue {
+  padding: 8px 10px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.alphaRow td {
+  border-bottom: none;
+}
+
+.alphaLabel {
+  padding: 8px 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.alphaValue {
+  padding: 8px 10px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ── Unknown Sector Note ── */
+.unknownNote {
+  font-size: 12px;
+  color: var(--color-warning);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.refreshLink {
+  background: none;
+  border: none;
+  color: var(--accent-primary);
+  font-size: 12px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.refreshLink:hover {
+  color: var(--accent-hover);
+}
+
+/* ── Empty ── */
+.empty {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  padding: var(--space-4) 0;
+}

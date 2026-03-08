@@ -1,0 +1,331 @@
+/* DataReadinessTab — Per-engine readiness analysis */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Coverage section */
+.coverageSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.coverageHeader {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.coverageStats {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.coverageBarTrack {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bg-tertiary);
+  overflow: hidden;
+}
+
+.coverageBarFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Detection summary */
+.detectionRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.detectionLabel {
+  font-weight: 600;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.detectionModel {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.detectionConfidence {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+/* Engine cards */
+.engineCards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.engineCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.engineHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.engineHeader:hover {
+  background: var(--bg-hover);
+}
+
+.engineHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.engineName {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.verdictBadge {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badgeReady {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--color-positive);
+}
+
+.badgePartial {
+  background: rgba(234, 179, 8, 0.15);
+  color: var(--color-warning);
+}
+
+.badgeNotPossible {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-negative);
+}
+
+.engineHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.detectionScore {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.chevron {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.chevronExpanded {
+  transform: rotate(90deg);
+}
+
+/* Engine body (collapsible) */
+.engineBody {
+  padding: 0 var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Impact note */
+.impactNote {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--text-secondary);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(239, 68, 68, 0.05);
+  border-left: 2px solid var(--color-negative);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  line-height: 1.5;
+}
+
+.impactNotePartial {
+  background: rgba(234, 179, 8, 0.05);
+  border-left-color: var(--color-warning);
+}
+
+/* Tier sections */
+.tierSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.tierHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-1) 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tierLabel {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+}
+
+.tierCount {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+/* Field rows */
+.fieldRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 3px 0 3px var(--space-2);
+}
+
+.fieldIcon {
+  flex: 0 0 16px;
+  font-size: 12px;
+  text-align: center;
+}
+
+.iconPresent {
+  color: var(--color-positive);
+}
+
+.iconDerived {
+  color: var(--color-warning);
+}
+
+.iconMissing {
+  color: var(--color-negative);
+}
+
+.fieldLabel {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.fieldYears {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.fieldSource {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fieldSourceMissing {
+  color: var(--color-negative);
+  font-weight: 600;
+}
+
+/* Loading / error / empty */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: var(--space-3);
+}
+
+.loadingText {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: var(--space-2);
+}
+
+.errorText {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--color-negative);
+}
+
+.retryBtn {
+  padding: 4px 16px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+
+.retryBtn:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-tertiary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}

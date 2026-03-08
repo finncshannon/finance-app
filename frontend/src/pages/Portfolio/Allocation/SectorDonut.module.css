@@ -1,0 +1,96 @@
+/* ── SectorDonut ───────────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+/* ── Donut ── */
+.donutWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.donut {
+  overflow: visible;
+}
+
+.centerLabel {
+  font-size: 11px;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.centerValue {
+  font-size: 18px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* ── Legend ── */
+.legend {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.legendRow {
+  display: grid;
+  grid-template-columns: 10px 1fr auto auto 100px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-micro);
+}
+
+.legendRow:hover {
+  background: var(--bg-hover);
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.legendName {
+  font-size: 12px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.legendValue {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.legendPct {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  text-align: right;
+  min-width: 42px;
+}
+
+.legendBarTrack {
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.legendBarFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--transition-micro);
+}

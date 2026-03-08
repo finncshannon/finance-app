@@ -1,0 +1,107 @@
+/* ── BenchmarkChart ────────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Chart ── */
+.chartWrapper {
+  width: 100%;
+  height: 300px;
+}
+
+/* ── Recharts Tooltip ── */
+.tooltip {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: 12px;
+  font-family: var(--font-sans);
+  box-shadow: var(--shadow-lg);
+}
+
+.tooltipDate {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-1);
+  font-family: var(--font-mono);
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 1px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.tooltipDot {
+  width: 8px;
+  height: 3px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.tooltipValue {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-left: auto;
+}
+
+/* ── Summary Table ── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--font-sans);
+}
+
+.th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+  border-bottom: 1px solid var(--border-medium);
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.thRight {
+  composes: th;
+  text-align: right;
+}
+
+.tr {
+  transition: background var(--transition-micro);
+}
+
+.tr:hover {
+  background: var(--bg-hover);
+}
+
+.td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.tdRight {
+  composes: td;
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+/* ── Empty ── */
+.empty {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  padding: var(--space-4) 0;
+}

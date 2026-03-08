@@ -1,0 +1,31 @@
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  transition: border-color var(--transition-micro);
+}
+
+.card:hover {
+  border-color: var(--border-medium);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.body {
+  /* Children container */
+}

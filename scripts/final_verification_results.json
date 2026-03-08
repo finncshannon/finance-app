@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-03-04T01:25:22",
+  "passed": 15,
+  "failed": 0,
+  "total": 15,
+  "steps": [
+    {
+      "step": 1,
+      "name": "App opens -- backend healthy",
+      "status": "PASS"
+    },
+    {
+      "step": 2,
+      "name": "Dashboard loads -- summary",
+      "status": "PASS"
+    },
+    {
+      "step": 3,
+      "name": "Dashboard watchlists load",
+      "status": "PASS"
+    },
+    {
+      "step": 4,
+      "name": "Search AAPL",
+      "status": "PASS"
+    },
+    {
+      "step": 5,
+      "name": "View AAPL profile",
+      "status": "PASS"
+    },
+    {
+      "step": 6,
+      "name": "View AAPL quote",
+      "status": "PASS"
+    },
+    {
+      "step": 7,
+      "name": "Model detection",
+      "status": "PASS"
+    },
+    {
+      "step": 8,
+      "name": "Generate DCF assumptions",
+      "status": "PASS"
+    },
+    {
+      "step": 9,
+      "name": "Run DCF engine",
+      "status": "PASS"
+    },
+    {
+      "step": 10,
+      "name": "Sensitivity tornado",
+      "status": "PASS"
+    },
+    {
+      "step": 11,
+      "name": "Model overview",
+      "status": "PASS"
+    },
+    {
+      "step": 12,
+      "name": "Models endpoint + save-version",
+      "status": "PASS"
+    },
+    {
+      "step": 13,
+      "name": "Scanner screen",
+      "status": "PASS"
+    },
+    {
+      "step": 14,
+      "name": "Portfolio positions",
+      "status": "PASS"
+    },
+    {
+      "step": 15,
+      "name": "Settings + system info",
+      "status": "PASS"
+    }
+  ]
+}

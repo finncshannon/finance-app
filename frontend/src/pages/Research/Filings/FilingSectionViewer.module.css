@@ -1,0 +1,6 @@
+.viewer { flex: 1; display: flex; overflow: hidden; }
+.content { flex: 1; overflow-y: auto; padding: var(--space-4) var(--space-6); }
+.sectionTitle { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
+.sectionBody { font-size: 14px; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; word-wrap: break-word; }
+.sectionBody table { font-family: var(--font-mono); font-size: 12px; }
+.empty { display: flex; align-items: center; justify-content: center; flex: 1; color: var(--text-tertiary); font-size: 13px; }

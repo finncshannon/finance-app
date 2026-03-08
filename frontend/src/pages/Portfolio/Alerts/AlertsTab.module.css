@@ -1,0 +1,231 @@
+/* ── AlertsTab ─────────────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+}
+
+.headerTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.btnPrimary {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: 1px solid var(--accent-primary);
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  transition: background var(--transition-micro);
+}
+
+.btnPrimary:hover {
+  background: var(--accent-hover);
+}
+
+/* ── Table ── */
+.tableWrapper {
+  flex: 1;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--font-sans);
+}
+
+.th {
+  position: sticky;
+  top: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+  background: var(--bg-table-header);
+  border-bottom: 1px solid var(--border-medium);
+  padding: 6px 10px;
+  white-space: nowrap;
+  text-align: left;
+  user-select: none;
+}
+
+.thRight {
+  composes: th;
+  text-align: right;
+}
+
+.thCenter {
+  composes: th;
+  text-align: center;
+}
+
+.td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.tdRight {
+  composes: td;
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+.tdCenter {
+  composes: td;
+  text-align: center;
+}
+
+.trOdd {
+  background: var(--bg-table-odd);
+  transition: background var(--transition-micro);
+}
+
+.trEven {
+  background: var(--bg-table-even);
+  transition: background var(--transition-micro);
+}
+
+.trOdd:hover,
+.trEven:hover {
+  background: var(--bg-hover);
+}
+
+.tickerMono {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+/* ── Alert Type Badge ── */
+.typeBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--accent-subtle);
+  color: var(--accent-primary);
+}
+
+/* ── Status ── */
+.statusActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-positive);
+}
+
+.statusTriggered {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-warning);
+}
+
+.dotActive {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-positive);
+}
+
+.dotTriggered {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-warning);
+}
+
+/* ── Delete Button ── */
+.deleteBtn {
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: 1px solid var(--border-medium);
+  background: var(--bg-tertiary);
+  color: var(--color-negative);
+  transition: background var(--transition-micro);
+}
+
+.deleteBtn:hover {
+  background: var(--color-negative-subtle);
+}
+
+.deleteBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Empty State ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.emptyBtn {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: 1px solid var(--accent-primary);
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  transition: background var(--transition-micro);
+}
+
+.emptyBtn:hover {
+  background: var(--accent-hover);
+}
+
+/* ── Loading ── */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.error {
+  color: var(--color-negative);
+  font-size: 12px;
+  padding: var(--space-4);
+}

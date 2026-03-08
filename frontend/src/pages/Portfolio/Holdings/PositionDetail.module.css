@@ -1,0 +1,172 @@
+/* ── PositionDetail ────────────────────────────────── */
+
+.container {
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+}
+
+/* ── Inner Tables ── */
+.innerTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  font-family: var(--font-sans);
+}
+
+.innerTh {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-medium);
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.innerThRight {
+  composes: innerTh;
+  text-align: right;
+}
+
+.innerTd {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.innerTdRight {
+  composes: innerTd;
+  text-align: right;
+  font-family: var(--font-mono);
+}
+
+.innerTrOdd {
+  background: var(--bg-table-odd);
+}
+
+.innerTrEven {
+  background: var(--bg-table-even);
+}
+
+/* ── Badge ── */
+.badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badgeBuy {
+  composes: badge;
+  background: var(--color-positive-subtle);
+  color: var(--color-positive);
+}
+
+.badgeSell {
+  composes: badge;
+  background: var(--color-negative-subtle);
+  color: var(--color-negative);
+}
+
+.badgeDividend {
+  composes: badge;
+  background: var(--accent-subtle);
+  color: var(--accent-primary);
+}
+
+.badgeOther {
+  composes: badge;
+  background: rgba(163, 163, 163, 0.15);
+  color: var(--text-secondary);
+}
+
+.ltLabel {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ltLong {
+  composes: ltLabel;
+  background: var(--color-positive-subtle);
+  color: var(--color-positive);
+}
+
+.ltShort {
+  composes: ltLabel;
+  background: var(--color-warning-subtle);
+  color: var(--color-warning);
+}
+
+/* ── Actions ── */
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.actionBtn {
+  padding: var(--space-1) var(--space-3);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background var(--transition-micro);
+}
+
+.actionBtn:hover {
+  background: var(--bg-hover);
+}
+
+.actionBtnPrimary {
+  composes: actionBtn;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--text-on-accent);
+}
+
+.actionBtnPrimary:hover {
+  background: var(--accent-hover);
+}
+
+/* ── Loading / Empty ── */
+.loading {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  padding: var(--space-2) 0;
+}
+
+.empty {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}

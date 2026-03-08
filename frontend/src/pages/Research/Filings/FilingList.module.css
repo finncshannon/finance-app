@@ -1,0 +1,12 @@
+.list { overflow-y: auto; border-right: 1px solid var(--border-subtle); height: 100%; }
+.table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.th { padding: 8px 12px; text-align: left; font-size: 10px; text-transform: uppercase; color: var(--text-tertiary); background: var(--bg-tertiary); font-weight: 500; position: sticky; top: 0; z-index: 1; }
+.tr { cursor: pointer; }
+.tr:hover { background: var(--bg-hover); }
+.trActive { background: var(--accent-subtle); }
+.td { padding: 8px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
+.formBadge { display: inline-block; padding: 1px 6px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 600; font-family: var(--font-mono); background: var(--bg-tertiary); border: 1px solid var(--border-medium); color: var(--text-secondary); }
+.form10K { color: var(--accent-primary); border-color: var(--accent-primary); }
+.form10Q { color: var(--color-positive); border-color: var(--color-positive); }
+.form8K { color: var(--color-warning); border-color: var(--color-warning); }
+.empty { padding: var(--space-6); text-align: center; color: var(--text-tertiary); font-size: 12px; }

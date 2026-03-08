@@ -1,0 +1,112 @@
+/* ── ReturnMetrics ─────────────────────────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--text-tertiary);
+}
+
+/* ── TWR Row ── */
+.twrRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.twrItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.twrPeriod {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.twrValue {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  line-height: 1.2;
+}
+
+/* ── MWRR ── */
+.mwrrRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.mwrrLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.mwrrValue {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.mwrrSep {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* ── Note ── */
+.note {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .twrRow {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .twrItem {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-1) 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .twrValue {
+    font-size: 14px;
+  }
+
+  .mwrrRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+}
+
+/* ── Empty ── */
+.empty {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  padding: var(--space-4) 0;
+}

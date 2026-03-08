@@ -1,0 +1,6 @@
+# Stock Valuation System - Python Dependencies
+# Install: pip install -r requirements.txt
+
+yfinance>=0.2.31,<0.3.0
+xlwings>=0.30.0,<0.32.0
+pandas>=2.0.0,<3.0.0
