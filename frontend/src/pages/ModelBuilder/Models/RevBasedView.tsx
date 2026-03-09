@@ -173,9 +173,10 @@ export function RevBasedView({ result }: RevBasedViewProps) {
     <div className={styles.container}>
       {/* a) ResultsCard */}
       <ResultsCard
-        impliedPrice={result.weighted_implied_price}
+        impliedPrice={scenario?.primary_implied_price ?? result.weighted_implied_price}
         currentPrice={result.current_price}
-        upsidePct={result.weighted_upside_downside_pct}
+        upsidePct={scenario?.upside_downside_pct ?? result.weighted_upside_downside_pct}
+        scenarioLabel={activeScenario !== 'base' ? SCENARIO_LABELS[activeScenario] : undefined}
         exportSlot={
           useModelStore.getState().activeModelId ? (
             <ExportDropdown

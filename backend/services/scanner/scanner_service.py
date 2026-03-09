@@ -9,6 +9,7 @@ Builds SQL queries dynamically against:
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import time
@@ -33,9 +34,11 @@ logger = logging.getLogger("finance_app")
 class ScannerService:
     """Orchestrates financial screening, text search, and ranking."""
 
-    def __init__(self, db: DatabaseConnection, scanner_repo: ScannerRepo):
+    def __init__(self, db: DatabaseConnection, scanner_repo: ScannerRepo, market_data_svc=None):
         self.db = db
         self.repo = scanner_repo
+        self.market_data_svc = market_data_svc
+        self._fetch_attempted: set[str] = set()  # tickers already auto-fetched this session
 
     # ==================================================================
     # Main scan (filters + optional text search)
@@ -102,6 +105,77 @@ class ScannerService:
 
         # --- Build result rows ---
         scanner_rows = self._rows_to_scanner_rows(rows)
+
+        # --- Auto-fetch missing data for result rows ---
+        if self.market_data_svc:
+            md_keys = {"current_price", "market_cap", "pe_trailing", "volume", "beta"}
+            fd_keys = {"revenue", "net_income", "gross_margin", "ebit", "total_assets"}
+
+            needs_quote: list[str] = []
+            needs_financials: list[str] = []
+            all_missing: list[str] = []
+
+            for r in scanner_rows:
+                if r.ticker in self._fetch_attempted:
+                    continue
+                has_md = bool(r.metrics and md_keys & r.metrics.keys())
+                has_fd = bool(r.metrics and fd_keys & r.metrics.keys())
+                if has_md and has_fd:
+                    continue
+                all_missing.append(r.ticker)
+                if not has_md:
+                    needs_quote.append(r.ticker)
+                if not has_fd:
+                    needs_financials.append(r.ticker)
+
+            if all_missing:
+                logger.info(
+                    "Scanner: auto-fetching %d quotes + %d financials",
+                    len(needs_quote), len(needs_financials),
+                )
+
+                async def _safe_quote(t: str):
+                    try:
+                        await self.market_data_svc.get_quote(t)
+                    except Exception:
+                        pass
+
+                async def _safe_financials(t: str):
+                    try:
+                        await self.market_data_svc.get_financials(t)
+                    except Exception:
+                        pass
+
+                # Fire fetches in batches of 10 to avoid overwhelming yfinance
+                all_tasks = (
+                    [("q", t) for t in needs_quote] +
+                    [("f", t) for t in needs_financials]
+                )
+                for batch_start in range(0, len(all_tasks), 10):
+                    batch = all_tasks[batch_start:batch_start + 10]
+                    await asyncio.gather(*(
+                        _safe_quote(t) if kind == "q" else _safe_financials(t)
+                        for kind, t in batch
+                    ))
+
+                # Mark as attempted so we don't retry on next page/scan
+                self._fetch_attempted.update(all_missing)
+
+                # Re-query the missing tickers to get their now-populated data
+                ph = ", ".join(["?"] * len(all_missing))
+                refetch_sql = f"""
+                    SELECT DISTINCT c.ticker, c.company_name, c.sector, c.industry,
+                           {', '.join(select_cols)}
+                    FROM companies c
+                    {' '.join(joins)}
+                    WHERE c.ticker IN ({ph})
+                """
+                refetched = await self.db.fetchall(refetch_sql, tuple(t.upper() for t in all_missing))
+                refetched_map = {r["ticker"]: r for r in refetched}
+
+                for i, sr in enumerate(scanner_rows):
+                    if sr.ticker in refetched_map and sr.ticker in all_missing:
+                        scanner_rows[i] = self._rows_to_scanner_rows([refetched_map[sr.ticker]])[0]
 
         # --- Optional text search ---
         text_hits: list[TextSearchHit] = []

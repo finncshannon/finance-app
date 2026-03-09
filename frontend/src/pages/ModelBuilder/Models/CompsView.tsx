@@ -5,6 +5,7 @@ import { ExportDropdown } from '../../../components/ui/ExportButton/ExportDropdo
 import { useModelStore } from '../../../stores/modelStore';
 import { downloadExport } from '../../../services/exportService';
 import { api } from '../../../services/api';
+import { navigationService } from '../../../services/navigationService';
 import { displayLabel } from '../../../utils/displayNames';
 import { fmtDollar, fmtPct, fmtMultiple, fmtNumber, fmtPrice } from './formatters';
 import styles from './CompsView.module.css';
@@ -96,6 +97,45 @@ export function CompsView({ result, onRerun }: CompsViewProps) {
 
   const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Ticker hover popup state
+  const [hoveredTicker, setHoveredTicker] = useState<string | null>(null);
+  const [hoverPos, setHoverPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [companyDesc, setCompanyDesc] = useState<Record<string, string>>({});
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleTickerMouseEnter = useCallback((e: React.MouseEvent, ticker: string) => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setHoverPos({ x: rect.left, y: rect.bottom + 4 });
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredTicker(ticker);
+      if (!companyDesc[ticker]) {
+        api.get<{ data?: { description?: string; company_name?: string; sector?: string; industry?: string } }>(`/api/v1/companies/${ticker}`)
+          .then((res) => {
+            const d = (res as Record<string, unknown>)?.data ?? res;
+            const data = d as Record<string, string>;
+            const desc = data?.description || data?.company_name || 'No description available';
+            const sector = data?.sector || '';
+            const industry = data?.industry || '';
+            const summary = [sector, industry].filter(Boolean).join(' · ');
+            setCompanyDesc((prev) => ({ ...prev, [ticker]: summary ? `${summary}\n${desc}` : desc }));
+          })
+          .catch(() => {
+            setCompanyDesc((prev) => ({ ...prev, [ticker]: 'Description unavailable' }));
+          });
+      }
+    }, 300);
+  }, [companyDesc]);
+
+  const handleTickerMouseLeave = useCallback(() => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setHoveredTicker(null);
+  }, []);
+
+  const handleTickerClick = useCallback((ticker: string) => {
+    navigationService.goToResearch(ticker, 'profile');
+  }, []);
 
   // Sync peer list when results update
   useEffect(() => {
@@ -412,7 +452,16 @@ export function CompsView({ result, onRerun }: CompsViewProps) {
               <tbody>
                 {sortedPeers.map((peer) => (
                   <tr key={peer.ticker}>
-                    <td>{peer.ticker}</td>
+                    <td>
+                      <span
+                        className={styles.tickerLink}
+                        onClick={() => handleTickerClick(peer.ticker)}
+                        onMouseEnter={(e) => handleTickerMouseEnter(e, peer.ticker)}
+                        onMouseLeave={handleTickerMouseLeave}
+                      >
+                        {peer.ticker}
+                      </span>
+                    </td>
                     <td>{peer.company_name}</td>
                     <td>{fmtDollar(peer.market_cap)}</td>
                     <td>{fmtDollar(peer.enterprise_value)}</td>
@@ -534,6 +583,19 @@ export function CompsView({ result, onRerun }: CompsViewProps) {
                 {fmtPct(compositeAdj)}
               </span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ticker Hover Popup */}
+      {hoveredTicker && (
+        <div
+          className={styles.tickerPopup}
+          style={{ left: hoverPos.x, top: hoverPos.y }}
+        >
+          <div className={styles.popupTicker}>{hoveredTicker}</div>
+          <div className={styles.popupDesc}>
+            {companyDesc[hoveredTicker] ?? 'Loading...'}
           </div>
         </div>
       )}

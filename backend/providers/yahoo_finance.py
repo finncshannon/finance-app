@@ -178,19 +178,21 @@ class YahooFinanceProvider(DataProvider):
             beta=_safe_float(info, "beta"),
         )
 
-    async def get_historical_prices(self, ticker: str, period: str = "1y") -> list[PriceBar]:
-        """Fetch daily OHLCV bars."""
+    async def get_historical_prices(self, ticker: str, period: str = "1y", interval: str = "1d") -> list[PriceBar]:
+        """Fetch OHLCV bars at the given interval."""
 
         def _fetch() -> list[PriceBar]:
             t = self._get_ticker(ticker)
-            df = t.history(period=period, auto_adjust=True)
+            df = t.history(period=period, interval=interval, auto_adjust=True)
             if df.empty:
                 raise DataNotFoundError("yahoo", ticker, "historical prices")
 
             bars: list[PriceBar] = []
+            intraday = interval in ("1m", "2m", "5m", "15m", "30m", "60m", "90m", "1h")
             for idx, row in df.iterrows():
+                date_str = idx.strftime("%Y-%m-%d %H:%M") if intraday else str(idx.date())
                 bars.append(PriceBar(
-                    date=idx.date(),
+                    date=date_str,
                     open=float(row["Open"]),
                     high=float(row["High"]),
                     low=float(row["Low"]),

@@ -53,12 +53,17 @@ interface InlineInputProps {
   /** Multiply/divide factor for display (e.g. 100 for percentages) */
   displayFactor?: number;
   decimals?: number;
+  /** Slider range (in internal units, not display). Omit to hide slider. */
+  sliderMin?: number;
+  sliderMax?: number;
+  sliderStep?: number;
 }
 
-function InlineInput({ value, unit, isOverridden, onChange, displayFactor = 100, decimals = 2 }: InlineInputProps) {
+function InlineInput({ value, unit, isOverridden, onChange, displayFactor = 100, decimals = 2, sliderMin, sliderMax, sliderStep }: InlineInputProps) {
   const displayVal = (value * displayFactor).toFixed(decimals);
   const [localVal, setLocalVal] = useState(displayVal);
   const inputRef = useRef<HTMLInputElement>(null);
+  const showSlider = sliderMin != null && sliderMax != null;
 
   useEffect(() => {
     if (document.activeElement !== inputRef.current) {
@@ -78,6 +83,17 @@ function InlineInput({ value, unit, isOverridden, onChange, displayFactor = 100,
     [onChange, displayFactor],
   );
 
+  const handleSliderChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const internal = parseFloat(e.target.value);
+      if (!isNaN(internal)) {
+        setLocalVal((internal * displayFactor).toFixed(decimals));
+        onChange(internal);
+      }
+    },
+    [onChange, displayFactor, decimals],
+  );
+
   const handleBlur = useCallback(() => {
     const num = parseFloat(localVal);
     if (!isNaN(num)) {
@@ -89,6 +105,18 @@ function InlineInput({ value, unit, isOverridden, onChange, displayFactor = 100,
 
   return (
     <>
+      {showSlider && (
+        <input
+          type="range"
+          className={styles.fieldSlider}
+          min={sliderMin}
+          max={sliderMax}
+          step={sliderStep ?? 0.001}
+          value={value}
+          onChange={handleSliderChange}
+        />
+      )}
+      {!showSlider && <span className={styles.fieldSliderSpacer} />}
       <input
         ref={inputRef}
         className={styles.fieldInput}
@@ -176,12 +204,12 @@ export function WACCBreakdownComponent({
         {/* Risk-Free Rate */}
         <div className={`${styles.fieldRow} ${isOvr('risk_free_rate') ? styles.fieldRowOverridden ?? '' : ''}`}>
           <span className={styles.fieldLabel}>Risk-Free Rate</span>
-          <span className={styles.fieldSpacer} />
           <InlineInput
             value={rf}
             unit="%"
             isOverridden={isOvr('risk_free_rate')}
             onChange={(v) => onOverride('wacc_breakdown.risk_free_rate', v)}
+            sliderMin={0} sliderMax={0.10} sliderStep={0.001}
           />
           <span className={styles.fieldSource}>Current 10Y Treasury</span>
         </div>
@@ -189,12 +217,12 @@ export function WACCBreakdownComponent({
         {/* ERP */}
         <div className={`${styles.fieldRow} ${isOvr('erp') ? styles.fieldRowOverridden ?? '' : ''}`}>
           <span className={styles.fieldLabel}>Equity Risk Premium</span>
-          <span className={styles.fieldSpacer} />
           <InlineInput
             value={erp}
             unit="%"
             isOverridden={isOvr('erp')}
             onChange={(v) => onOverride('wacc_breakdown.erp', v)}
+            sliderMin={0.02} sliderMax={0.10} sliderStep={0.001}
           />
           <span className={styles.fieldSource}>Market consensus</span>
         </div>
@@ -202,13 +230,13 @@ export function WACCBreakdownComponent({
         {/* Raw Beta */}
         <div className={`${styles.fieldRow} ${isOvr('raw_beta') ? styles.fieldRowOverridden ?? '' : ''}`}>
           <span className={styles.fieldLabel}>Raw Beta</span>
-          <span className={styles.fieldSpacer} />
           <InlineInput
             value={rawBeta}
             unit=""
             isOverridden={isOvr('raw_beta')}
             onChange={(v) => onOverride('wacc_breakdown.raw_beta', v)}
             displayFactor={1}
+            sliderMin={0} sliderMax={3} sliderStep={0.01}
           />
           <span className={styles.fieldSource}>From Yahoo Finance</span>
         </div>
@@ -225,12 +253,12 @@ export function WACCBreakdownComponent({
         {/* Size Premium */}
         <div className={`${styles.fieldRow} ${isOvr('size_premium') ? styles.fieldRowOverridden ?? '' : ''}`}>
           <span className={styles.fieldLabel}>Size Premium</span>
-          <span className={styles.fieldSpacer} />
           <InlineInput
             value={sizePremium}
             unit="%"
             isOverridden={isOvr('size_premium')}
             onChange={(v) => onOverride('wacc_breakdown.size_premium', v)}
+            sliderMin={0} sliderMax={0.06} sliderStep={0.001}
           />
           <span className={styles.fieldSource}>{getSizeTierLabel(data.market_cap)}</span>
         </div>
@@ -273,12 +301,12 @@ export function WACCBreakdownComponent({
         {/* Pre-Tax Cost of Debt */}
         <div className={`${styles.fieldRow} ${isOvr('cost_of_debt_pre_tax') ? styles.fieldRowOverridden ?? '' : ''}`}>
           <span className={styles.fieldLabel}>Pre-Tax Cost of Debt</span>
-          <span className={styles.fieldSpacer} />
           <InlineInput
             value={kdPre}
             unit="%"
             isOverridden={isOvr('cost_of_debt_pre_tax')}
             onChange={(v) => onOverride('wacc_breakdown.cost_of_debt_pre_tax', v)}
+            sliderMin={0} sliderMax={0.15} sliderStep={0.001}
           />
           <span className={styles.fieldSource}>Interest / Debt</span>
         </div>
@@ -286,12 +314,12 @@ export function WACCBreakdownComponent({
         {/* Tax Rate */}
         <div className={`${styles.fieldRow} ${isOvr('effective_tax_rate') ? styles.fieldRowOverridden ?? '' : ''}`}>
           <span className={styles.fieldLabel}>Effective Tax Rate</span>
-          <span className={styles.fieldSpacer} />
           <InlineInput
             value={taxRate}
             unit="%"
             isOverridden={isOvr('effective_tax_rate')}
             onChange={(v) => onOverride('wacc_breakdown.effective_tax_rate', v)}
+            sliderMin={0} sliderMax={0.50} sliderStep={0.001}
           />
           <span className={styles.fieldSource}>From tax provision</span>
         </div>
@@ -334,12 +362,12 @@ export function WACCBreakdownComponent({
         {/* Equity Weight — editable, linked */}
         <div className={`${styles.fieldRow} ${isOvr('weight_equity') ? styles.fieldRowOverridden ?? '' : ''}`}>
           <span className={styles.fieldLabel}>Equity Weight (E/V)</span>
-          <span className={styles.fieldSpacer} />
           <InlineInput
             value={we}
             unit="%"
             isOverridden={isOvr('weight_equity')}
             onChange={handleWeightEquity}
+            sliderMin={0} sliderMax={1} sliderStep={0.01}
           />
           <span className={styles.fieldSource} />
         </div>
@@ -347,12 +375,12 @@ export function WACCBreakdownComponent({
         {/* Debt Weight — editable, linked */}
         <div className={`${styles.fieldRow} ${isOvr('weight_debt') ? styles.fieldRowOverridden ?? '' : ''}`}>
           <span className={styles.fieldLabel}>Debt Weight (D/V)</span>
-          <span className={styles.fieldSpacer} />
           <InlineInput
             value={wd}
             unit="%"
             isOverridden={isOvr('weight_debt')}
             onChange={handleWeightDebt}
+            sliderMin={0} sliderMax={1} sliderStep={0.01}
           />
           <span className={styles.fieldSource} />
         </div>

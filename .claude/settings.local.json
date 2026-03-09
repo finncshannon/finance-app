@@ -85,7 +85,20 @@
       "Bash(cd \"/c/Claude Access Point/StockValuation/Finance App/backend\" && \"/c/Claude Access Point/StockValuation/Finance App/electron/resources/python/python.exe\" -c \"import sys; sys.path.insert\\(0, '.'\\); from main import app; print\\('Backend app imported OK'\\)\" 2>&1)",
       "Bash(echo Electron build OK:*)",
       "Bash(cd \"/c/Claude Access Point/StockValuation/Finance App/electron\" && npm run build 2>&1)",
-      "Bash(ls -la \"/c/Claude Access Point/StockValuation/Finance App/electron/resources/python/python.exe\" 2>&1 && \"/c/Claude Access Point/StockValuation/Finance App/electron/resources/python/python.exe\" --version 2>&1)"
+      "Bash(ls -la \"/c/Claude Access Point/StockValuation/Finance App/electron/resources/python/python.exe\" 2>&1 && \"/c/Claude Access Point/StockValuation/Finance App/electron/resources/python/python.exe\" --version 2>&1)",
+      "Bash(netstat:*)",
+      "Bash(npm run:*)",
+      "Bash(npx:*)",
+      "Bash(\"C:/Claude Access Point/StockValuation/Finance App/node_modules/electron/dist/electron.exe\":*)",
+      "Bash(npx tsc:*)",
+      "Bash(do netstat:*)",
+      "Bash(cmd:*)",
+      "mcp__filesystem__directory_tree",
+      "Bash(WMIC PROCESS:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(powershell:*)",
+      "Bash(find:*)",
+      "Bash(wmic process:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

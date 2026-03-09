@@ -115,7 +115,7 @@ export function BootPhase({ active, backendReady, staggerMs = 110 }: BootPhasePr
       <div
         className={`${styles.headerLine} ${visibleHeaders >= 1 ? styles.headerLineVisible : ''}`}
       >
-        <span className={styles.title}>VALUATION ENGINE v2.0</span>
+        <span className={styles.title}>SPECTRE v2.0</span>
       </div>
 
       {/* Divider */}

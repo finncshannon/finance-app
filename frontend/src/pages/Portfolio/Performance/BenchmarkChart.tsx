@@ -22,6 +22,14 @@ function normalize(series: DailySnapshot[]): { date: string; value: number }[] {
 }
 
 function formatDateTick(dateStr: string): string {
+  if (!dateStr) return '';
+  // Intraday format: "2026-03-06 14:30"
+  if (dateStr.includes(' ')) {
+    const [datePart, time] = dateStr.split(' ');
+    const day = datePart?.split('-')[2];
+    return `${day} ${time}`;
+  }
+  // Daily format
   const d = new Date(dateStr);
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   return `${months[d.getMonth()]} ${d.getFullYear().toString().slice(2)}`;
@@ -68,12 +76,24 @@ export function BenchmarkChart({ benchmark }: Props) {
   const chartData = useMemo(() => {
     const portNorm = normalize(benchmark.portfolio_series);
     const benchNorm = normalize(benchmark.benchmark_series);
-    const maxLen = Math.max(portNorm.length, benchNorm.length);
-    return Array.from({ length: maxLen }, (_, i) => ({
-      date: portNorm[i]?.date ?? benchNorm[i]?.date ?? '',
-      portfolio: portNorm[i]?.value ?? null,
-      benchmark: benchNorm[i]?.value ?? null,
-    }));
+
+    // Merge by date key so both series align properly
+    const dateMap = new Map<string, { portfolio: number | null; benchmark: number | null }>();
+    for (const p of portNorm) {
+      dateMap.set(p.date, { portfolio: p.value, benchmark: null });
+    }
+    for (const b of benchNorm) {
+      const existing = dateMap.get(b.date);
+      if (existing) {
+        existing.benchmark = b.value;
+      } else {
+        dateMap.set(b.date, { portfolio: null, benchmark: b.value });
+      }
+    }
+
+    return Array.from(dateMap.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([d, vals]) => ({ date: d, portfolio: vals.portfolio, benchmark: vals.benchmark }));
   }, [benchmark]);
 
   if (chartData.length === 0) {

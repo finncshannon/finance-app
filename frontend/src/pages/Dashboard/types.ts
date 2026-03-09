@@ -74,6 +74,7 @@ export interface RecentModel {
 export interface UpcomingEvent {
   date: string;
   ticker: string;
+  company_name?: string;
   event_type: string;
   detail: string;
   source: 'portfolio' | 'watchlist' | 'market';

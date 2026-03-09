@@ -9,7 +9,7 @@ from db.connection import DatabaseConnection
 from services.market_data_service import MarketDataService
 
 from .models import BenchmarkResult, DailySnapshot
-from .analytics import PortfolioAnalytics
+from .analytics import PortfolioAnalytics, SHORT_PERIODS, PERIOD_DAYS
 
 logger = logging.getLogger("finance_app")
 
@@ -28,31 +28,32 @@ class BenchmarkService:
     ) -> BenchmarkResult:
         """Compare portfolio TWR vs benchmark TWR over multiple periods."""
         today = date.today()
+        start = self.analytics._period_start(today, period)
+        is_short = period in SHORT_PERIODS
+
+        # Build series — hourly for short periods, daily otherwise
+        if is_short:
+            port_daily = await self.analytics.build_hourly_valuation_series(period, account)
+            bench_daily = await self.get_benchmark_hourly_series(benchmark, period)
+        else:
+            port_daily = await self.analytics.build_daily_valuation_series(
+                start.isoformat(), today.isoformat(), account,
+            )
+            bench_daily = await self.get_benchmark_daily_series(
+                benchmark, start.isoformat(), today.isoformat(),
+            )
+
+        # Compute TWR for each standard period
         periods_to_compute = ["1M", "3M", "6M", "YTD", "1Y"]
-
-        # Get portfolio daily series for longest period
-        start = self.analytics._period_start(today, "1Y")
-        port_daily = await self.analytics.build_daily_valuation_series(
-            start.isoformat(), today.isoformat(), account,
-        )
-
-        # Get benchmark daily series
-        bench_daily = await self.get_benchmark_daily_series(
-            benchmark, start.isoformat(), today.isoformat(),
-        )
-
-        # Compute TWR for each period
         period_results: dict[str, dict] = {}
         for p in periods_to_compute:
             p_start = self.analytics._period_start(today, p).isoformat()
 
-            # Portfolio TWR for this period
-            p_port = [d for d in port_daily if d.date >= p_start]
+            p_port = [d for d in port_daily if d.date[:10] >= p_start]
             p_port_vals = [d.portfolio_value for d in p_port]
             port_twr = self.analytics.compute_twr(p_port_vals) if len(p_port_vals) >= 2 else None
 
-            # Benchmark TWR for this period
-            p_bench = [d for d in bench_daily if d.date >= p_start]
+            p_bench = [d for d in bench_daily if d.date[:10] >= p_start]
             p_bench_vals = [d.portfolio_value for d in p_bench]
             bench_twr = self.analytics.compute_twr(p_bench_vals) if len(p_bench_vals) >= 2 else None
 
@@ -81,10 +82,8 @@ class BenchmarkService:
         if not bars:
             return []
 
-        # Filter to date range
-        start = date.fromisoformat(start_date)
-        end = date.fromisoformat(end_date)
-        filtered = [b for b in bars if start <= b.date <= end]
+        # Filter to date range (compare as strings — both ISO format)
+        filtered = [b for b in bars if start_date <= b.date <= end_date]
 
         if not filtered:
             return []
@@ -96,7 +95,36 @@ class BenchmarkService:
 
         return [
             DailySnapshot(
-                date=bar.date.isoformat(),
+                date=bar.date,
+                portfolio_value=round(100 * bar.close / base_price, 2),
+            )
+            for bar in filtered
+        ]
+
+    async def get_benchmark_hourly_series(
+        self, ticker: str, period: str,
+    ) -> list[DailySnapshot]:
+        """Fetch benchmark hourly price history, normalized to $100 base."""
+        bars = await self.mds.get_historical(ticker, "5d", "1h")
+        if not bars:
+            return []
+
+        # Filter to requested period
+        today = date.today()
+        period_days = PERIOD_DAYS.get(period, 5)
+        start_str = (today - timedelta(days=period_days)).isoformat()
+        filtered = [b for b in bars if b.date[:10] >= start_str]
+
+        if not filtered:
+            return []
+
+        base_price = filtered[0].close
+        if base_price <= 0:
+            return []
+
+        return [
+            DailySnapshot(
+                date=bar.date,
                 portfolio_value=round(100 * bar.close / base_price, 2),
             )
             for bar in filtered

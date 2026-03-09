@@ -11,7 +11,7 @@ const HEALTH_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}/api/v1/system/health`
 const HEALTH_POLL_INTERVAL_MS = 100;
 const BACKEND_START_TIMEOUT_MS = 10000;
 const SHUTDOWN_GRACE_PERIOD_MS = 2000;
-const DEV_SERVER_URL = 'http://localhost:5173';
+const DEV_SERVER_URL = 'http://localhost:5174';
 
 // --- Layout breakpoints ---
 const LAYOUT_COMPACT = 1200;

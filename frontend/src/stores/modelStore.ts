@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../services/api';
-import type { SliderResult } from '../types/models';
+import type { AssumptionSet, SliderResult } from '../types/models';
 
 export type ModelType = 'dcf' | 'ddm' | 'comps' | 'revenue_based';
 
@@ -42,6 +42,8 @@ interface ModelState {
   activeModelId: number | null;
   detectionResult: ModelDetectionResult | null;
   assumptions: Record<string, unknown>;
+  assumptionData: AssumptionSet | null;
+  assumptionOverrides: Record<string, number>;
   output: ModelOutput | null;
   versions: ModelVersion[];
   loading: boolean;
@@ -50,6 +52,8 @@ interface ModelState {
   sensitivityParams: Record<string, unknown> | null;
   sliderOverrides: Record<string, number>;
   sliderResult: SliderResult | null;
+  cachedModelResult: unknown;
+  cachedModelMeta: { ticker: string; modelType: ModelType } | null;
 
   setTicker: (ticker: string) => void;
   setModelType: (type: ModelType) => void;
@@ -57,6 +61,10 @@ interface ModelState {
   setActiveModelId: (id: number | null) => void;
   setAssumptions: (assumptions: Record<string, unknown>) => void;
   updateAssumption: (key: string, value: unknown) => void;
+  setAssumptionData: (data: AssumptionSet | null) => void;
+  setAssumptionOverrides: (overrides: Record<string, number>) => void;
+  setAssumptionOverride: (key: string, value: number) => void;
+  clearAssumptionOverrides: () => void;
   setOutput: (output: ModelOutput | null) => void;
   setVersions: (versions: ModelVersion[]) => void;
   setLoading: (loading: boolean) => void;
@@ -69,6 +77,8 @@ interface ModelState {
   setSliderOverride: (key: string, value: number) => void;
   setSliderOverrides: (overrides: Record<string, number>) => void;
   setSliderResult: (result: SliderResult | null) => void;
+  setCachedModelResult: (ticker: string, modelType: ModelType, result: unknown) => void;
+  clearCachedModelResult: () => void;
   reset: () => void;
 }
 
@@ -78,6 +88,8 @@ export const useModelStore = create<ModelState>((set) => ({
   activeModelId: null,
   detectionResult: null,
   assumptions: {},
+  assumptionData: null,
+  assumptionOverrides: {},
   output: null,
   versions: [],
   loading: false,
@@ -86,9 +98,11 @@ export const useModelStore = create<ModelState>((set) => ({
   sensitivityParams: null,
   sliderOverrides: {},
   sliderResult: null,
+  cachedModelResult: null,
+  cachedModelMeta: null,
 
   setTicker: (ticker) => {
-    set({ activeTicker: ticker.toUpperCase(), loading: true, detectionResult: null });
+    set({ activeTicker: ticker.toUpperCase(), loading: true, detectionResult: null, assumptionData: null, assumptionOverrides: {}, cachedModelResult: null, cachedModelMeta: null });
     // Trigger detection in the background
     api
       .get<ModelDetectionResult>(`/api/v1/model-builder/${ticker.toUpperCase()}/detect`)
@@ -112,6 +126,13 @@ export const useModelStore = create<ModelState>((set) => ({
     set((state) => ({
       assumptions: { ...state.assumptions, [key]: value },
     })),
+  setAssumptionData: (data) => set({ assumptionData: data }),
+  setAssumptionOverrides: (overrides) => set({ assumptionOverrides: overrides }),
+  setAssumptionOverride: (key, value) =>
+    set((state) => ({
+      assumptionOverrides: { ...state.assumptionOverrides, [key]: value },
+    })),
+  clearAssumptionOverrides: () => set({ assumptionOverrides: {} }),
   setOutput: (output) => set({ output }),
   setVersions: (versions) => set({ versions }),
   setLoading: (loading) => set({ loading }),
@@ -142,6 +163,10 @@ export const useModelStore = create<ModelState>((set) => ({
   setSliderOverrides: (overrides) => set({ sliderOverrides: overrides }),
   setSliderResult: (result) => set({ sliderResult: result }),
 
+  setCachedModelResult: (ticker, modelType, result) =>
+    set({ cachedModelResult: result, cachedModelMeta: { ticker, modelType } }),
+  clearCachedModelResult: () => set({ cachedModelResult: null, cachedModelMeta: null }),
+
   reset: () =>
     set({
       activeTicker: null,
@@ -149,6 +174,8 @@ export const useModelStore = create<ModelState>((set) => ({
       activeModelId: null,
       detectionResult: null,
       assumptions: {},
+      assumptionData: null,
+      assumptionOverrides: {},
       output: null,
       versions: [],
       loading: false,
@@ -157,5 +184,7 @@ export const useModelStore = create<ModelState>((set) => ({
       sensitivityParams: null,
       sliderOverrides: {},
       sliderResult: null,
+      cachedModelResult: null,
+      cachedModelMeta: null,
     }),
 }));

@@ -7,6 +7,7 @@ export interface FilingSummary {
   form_type: string;
   filing_date: string;
   accession_number: string | null;
+  doc_url: string | null;
 }
 
 export interface FilingSection {
@@ -134,6 +135,18 @@ export interface PeerCompany {
   market_cap: number | null;
   pe_ratio: number | null;
   day_change_pct: number | null;
+}
+
+// ─── News Types ─────────────────────────────────────────
+export interface NewsArticle {
+  title: string;
+  link: string;
+  source: string;
+  published: string;
+  snippet?: string;
+  coverage_count?: number;
+  category?: string;
+  region?: string;
 }
 
 // ─── Formatters ──────────────────────────────────────────

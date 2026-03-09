@@ -88,6 +88,7 @@ class ResearchService:
                 "form_type": f.get("form_type", ""),
                 "filing_date": f.get("filing_date", ""),
                 "accession_number": f.get("accession_number"),
+                "doc_url": f.get("file_path"),
             }
             for f in filings
         ]
@@ -107,6 +108,8 @@ class ResearchService:
                     "form_type": filing.form_type,
                     "filing_date": filing.filing_date,
                     "accession_number": filing.accession_number,
+                    "cik": filing.cik,
+                    "file_path": filing.primary_doc_url,
                 })
                 count += 1
             logger.info("Fetched %d filings for %s from SEC EDGAR", count, ticker)
@@ -117,6 +120,41 @@ class ResearchService:
 
     async def get_filing_sections(self, filing_id: int) -> list[dict]:
         sections = await self.filing_repo.get_filing_sections(filing_id)
+
+        # On-demand: if no sections cached, download and parse the filing
+        if not sections:
+            filing = await self.filing_repo.get_filing_by_id(filing_id)
+            if filing:
+                ticker = filing.get("ticker", "")
+                form_type = filing.get("form_type", "")
+                doc_url = filing.get("file_path", "")
+                accession = filing.get("accession_number", "")
+
+                html = None
+                if doc_url:
+                    html = await self.company_svc.sec.download_filing_by_url(doc_url)
+                elif accession and ticker:
+                    html = await self.company_svc.sec.download_filing(ticker, accession)
+
+                if html:
+                    if form_type in ("10-K", "10-Q"):
+                        from providers.sec_edgar import SECEdgarProvider
+                        parsed = SECEdgarProvider.parse_10k_sections(html)
+                    else:
+                        # For 8-K and other forms, store the full text as one section
+                        import re
+                        text = re.sub(r'<[^>]+>', ' ', html)
+                        text = re.sub(r'\s+', ' ', text).strip()
+                        if len(text) > 200_000:
+                            text = text[:200_000] + "\n[Content truncated]"
+                        parsed = {"full_text": {"title": f"{form_type} Filing", "content": text}}
+
+                    if parsed:
+                        await self.filing_repo.upsert_sections(filing_id, parsed)
+                        sections = await self.filing_repo.get_filing_sections(filing_id)
+                        logger.info("Parsed %d sections for filing %d (%s %s)",
+                                    len(sections), filing_id, ticker, form_type)
+
         return [
             {
                 "id": s["id"],

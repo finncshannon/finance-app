@@ -115,6 +115,20 @@ class AttributionService:
             r_p = sector_data.get(sector, {}).get("return", 0)
             r_b = r_p  # Simplified: use portfolio sector return as proxy
 
+            # If portfolio has no exposure, zero everything out
+            if w_p == 0:
+                sectors.append(SectorAttribution(
+                    sector=sector,
+                    port_weight=0,
+                    bench_weight=round(w_b, 4),
+                    port_return=0,
+                    bench_return=0,
+                    allocation_effect=0,
+                    selection_effect=0,
+                    interaction_effect=0,
+                ))
+                continue
+
             alloc = (w_p - w_b) * (r_b - bench_total_return)
             select = w_b * (r_p - r_b)
             interact = (w_p - w_b) * (r_p - r_b)

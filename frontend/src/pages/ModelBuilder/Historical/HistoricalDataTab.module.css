@@ -212,7 +212,7 @@
   font-size: 13px;
 }
 
-/* ===== Inspect toggle (Apple-style slider) ===== */
+/* ===== Inspect toggle (Bloomberg-style) ===== */
 
 .inspectToggle {
   flex-shrink: 0;
@@ -221,7 +221,7 @@
 .toggleLabel {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 0;
   cursor: pointer;
   user-select: none;
 }
@@ -236,43 +236,33 @@
 .toggleSlider {
   position: relative;
   display: inline-block;
-  width: 36px;
-  height: 20px;
-  border-radius: 10px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-subtle);
-  transition: all 0.2s ease;
-}
-
-.toggleSlider::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
   background: var(--text-tertiary);
-  transition: all 0.2s ease;
+  opacity: 0.25;
+  margin-right: 8px;
+  transition: all 120ms linear;
 }
 
-.toggleInput:checked + .toggleSlider {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
+.toggleInput:checked ~ .toggleSlider {
+  background: #FF9F1C;
+  opacity: 1;
+  box-shadow: 0 0 6px rgba(255, 159, 28, 0.5), 0 0 12px rgba(255, 159, 28, 0.2);
 }
 
-.toggleInput:checked + .toggleSlider::after {
-  left: 18px;
-  background: white;
+.toggleInput:checked ~ .toggleText {
+  color: #FF9F1C;
+  text-shadow: 0 0 8px rgba(255, 159, 28, 0.3);
 }
 
 .toggleText {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 1px;
 }
 
 /* ===== Glass bubble (inspect mode — populated cells) ===== */

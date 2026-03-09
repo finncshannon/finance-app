@@ -52,9 +52,9 @@ class KeyStatistics(BaseModel):
 
 
 class PriceBar(BaseModel):
-    """Single OHLCV daily price bar."""
+    """Single OHLCV price bar (daily or intraday)."""
 
-    date: date
+    date: str
     open: float
     high: float
     low: float

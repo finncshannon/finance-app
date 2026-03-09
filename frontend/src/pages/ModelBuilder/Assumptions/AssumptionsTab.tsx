@@ -4,6 +4,7 @@ import { api } from '../../../services/api';
 import { LoadingSpinner } from '../../../components/ui/Loading/LoadingSpinner';
 import { AssumptionCard } from './AssumptionCard';
 import { WACCBreakdownComponent } from './WACCBreakdown';
+import { FCFBreakdownComponent } from './FCFBreakdown';
 import type { AssumptionSet, ConfidenceDetail, ScenarioProjections } from '../../../types/models';
 import styles from './AssumptionsTab.module.css';
 
@@ -49,13 +50,32 @@ export function AssumptionsTab() {
   const pendingOverrides = useModelStore((s) => s.pendingSliderOverrides);
   const pushSliderToAssumptions = useModelStore((s) => s.pushSliderToAssumptions);
   const clearSliderOverrides = useModelStore((s) => s.clearSliderOverrides);
+  const storedAssumptionData = useModelStore((s) => s.assumptionData);
+  const storedOverrides = useModelStore((s) => s.assumptionOverrides);
+  const setStoreAssumptionData = useModelStore((s) => s.setAssumptionData);
+  const setAssumptionOverrides = useModelStore((s) => s.setAssumptionOverrides);
+  const setAssumptionOverride = useModelStore((s) => s.setAssumptionOverride);
+  const clearAssumptionOverrides = useModelStore((s) => s.clearAssumptionOverrides);
   const pendingCount = Object.keys(pendingOverrides).length;
 
-  const [data, setData] = useState<AssumptionSet | null>(null);
+  // Initialize local state from store (persists across tab switches)
+  const [data, setDataLocal] = useState<AssumptionSet | null>(storedAssumptionData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [scenario, setScenario] = useState<ScenarioKey>('base');
-  const [overrides, setOverrides] = useState<Record<string, number>>({});
+  const [overrides, setOverridesLocal] = useState<Record<string, number>>(storedOverrides);
+
+  // Wrap setData to also persist to store
+  const setData = useCallback((result: AssumptionSet | null) => {
+    setDataLocal(result);
+    setStoreAssumptionData(result);
+  }, [setStoreAssumptionData]);
+
+  // Wrap setOverrides to also persist to store
+  const setOverrides = useCallback((overridesVal: Record<string, number>) => {
+    setOverridesLocal(overridesVal);
+    setAssumptionOverrides(overridesVal);
+  }, [setAssumptionOverrides]);
 
   // -----------------------------------------------------------------------
   // Fetch / Generate
@@ -67,12 +87,20 @@ export function AssumptionsTab() {
       setLoading(true);
       setError(null);
       try {
+        // When regenerating with keepOverrides, send current overrides to backend
+        const currentOverrides = keepOverrides
+          ? useModelStore.getState().assumptionOverrides
+          : undefined;
         const result = await api.post<AssumptionSet>(
           `/api/v1/model-builder/${ticker}/generate`,
-          {},
+          { overrides: currentOverrides && Object.keys(currentOverrides).length > 0
+              ? currentOverrides
+              : undefined },
         );
         setData(result);
-        if (!keepOverrides) setOverrides({});
+        if (!keepOverrides) {
+          setOverrides({});
+        }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Failed to generate assumptions';
         setError(msg);
@@ -80,7 +108,7 @@ export function AssumptionsTab() {
         setLoading(false);
       }
     },
-    [ticker],
+    [ticker, setData, setOverrides],
   );
 
   const reset = useCallback(async () => {
@@ -99,11 +127,19 @@ export function AssumptionsTab() {
     } finally {
       setLoading(false);
     }
-  }, [ticker]);
+  }, [ticker, setData, setOverrides]);
 
-  // On ticker change, generate
+  // On ticker change, generate fresh — but skip if store already has data for this ticker
   useEffect(() => {
     if (ticker) {
+      const existing = useModelStore.getState().assumptionData;
+      if (existing && existing.ticker === ticker) {
+        // Already have data for this ticker — restore from store
+        setDataLocal(existing);
+        setOverridesLocal(useModelStore.getState().assumptionOverrides);
+        return;
+      }
+      clearAssumptionOverrides();
       generate(false);
     } else {
       setData(null);
@@ -118,15 +154,23 @@ export function AssumptionsTab() {
 
   const handleOverride = useCallback(
     (path: string, value: number) => {
-      setOverrides((prev) => ({ ...prev, [path]: value }));
+      setOverridesLocal((prev) => {
+        const next = { ...prev, [path]: value };
+        setAssumptionOverrides(next);
+        return next;
+      });
+      // Sync individual override to store
+      setAssumptionOverride(path, value);
 
       // Optimistically update local data as well
-      setData((prev) => {
+      setDataLocal((prev) => {
         if (!prev) return prev;
-        return applyOverrideLocally(prev, path, value);
+        const updated = applyOverrideLocally(prev, path, value);
+        setStoreAssumptionData(updated);
+        return updated;
       });
     },
-    [],
+    [setAssumptionOverride, setAssumptionOverrides, setStoreAssumptionData],
   );
 
   // -----------------------------------------------------------------------
@@ -409,52 +453,23 @@ export function AssumptionsTab() {
           )}
         </Section>
 
-        {/* Capital Structure */}
+        {/* FCF & Capital Structure */}
         {dcf && (
           <Section
-            title="Capital Structure"
+            title="Free Cash Flow"
             confidence={capitalConf}
             reasoning={reasoning['capital_structure']}
             overallScore={overallScore}
+            collapsible
           >
-            <AssumptionCard
-              label="CapEx / Revenue"
-              value={
-                overrides['model_assumptions.dcf.capex_to_revenue'] ?? dcf.capex_to_revenue
-              }
-              unit="ratio"
+            <FCFBreakdownComponent
+              scenario={scenarioData}
+              dcf={dcf}
+              scenarioKey={scenario}
+              overrides={overrides}
+              onOverride={handleOverride}
               confidenceScore={capitalConf?.score}
               reasoning={capitalConf?.reasoning}
-              isOverridden={'model_assumptions.dcf.capex_to_revenue' in overrides}
-              onChange={(v) =>
-                handleOverride('model_assumptions.dcf.capex_to_revenue', v)
-              }
-            />
-            <AssumptionCard
-              label="D&A / Revenue"
-              value={
-                overrides['model_assumptions.dcf.depreciation_to_revenue'] ??
-                dcf.depreciation_to_revenue
-              }
-              unit="ratio"
-              confidenceScore={capitalConf?.score}
-              isOverridden={'model_assumptions.dcf.depreciation_to_revenue' in overrides}
-              onChange={(v) =>
-                handleOverride('model_assumptions.dcf.depreciation_to_revenue', v)
-              }
-            />
-            <AssumptionCard
-              label="NWC Change / Revenue"
-              value={
-                overrides['model_assumptions.dcf.nwc_change_to_revenue'] ??
-                dcf.nwc_change_to_revenue
-              }
-              unit="ratio"
-              confidenceScore={capitalConf?.score}
-              isOverridden={'model_assumptions.dcf.nwc_change_to_revenue' in overrides}
-              onChange={(v) =>
-                handleOverride('model_assumptions.dcf.nwc_change_to_revenue', v)
-              }
             />
           </Section>
         )}

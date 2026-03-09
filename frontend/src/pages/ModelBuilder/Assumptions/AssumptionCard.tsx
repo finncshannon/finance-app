@@ -57,6 +57,23 @@ function unitSuffix(unit: Unit): string {
   }
 }
 
+/** Slider range bounds (in internal units). */
+function sliderBounds(unit: Unit, value: number): { min: number; max: number; step: number } {
+  switch (unit) {
+    case 'pct':
+      return { min: -0.10, max: 0.50, step: 0.001 };
+    case 'ratio':
+      return { min: 0, max: 0.30, step: 0.001 };
+    case 'multiple':
+      return { min: 0, max: 30, step: 0.1 };
+    case 'abs':
+    default: {
+      const absVal = Math.abs(value) || 1;
+      return { min: 0, max: absVal * 3, step: absVal * 0.01 };
+    }
+  }
+}
+
 /** Confidence badge class based on score. */
 function confidenceClass(score: number): string {
   if (score >= 80) return styles.confidenceGreen ?? '';
@@ -98,6 +115,17 @@ export function AssumptionCard({
     [unit, onChange],
   );
 
+  const handleSliderChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const internal = parseFloat(e.target.value);
+      if (!isNaN(internal)) {
+        setDisplayValue(toDisplay(internal, unit));
+        onChange(internal);
+      }
+    },
+    [unit, onChange],
+  );
+
   const handleBlur = useCallback(() => {
     // Re-format on blur
     const parsed = fromDisplay(displayValue, unit);
@@ -112,6 +140,8 @@ export function AssumptionCard({
   const rowClass = [styles.row, isOverridden ? styles.rowOverridden : '']
     .filter(Boolean)
     .join(' ');
+
+  const bounds = sliderBounds(unit, value);
 
   return (
     <div className={rowClass}>
@@ -132,8 +162,21 @@ export function AssumptionCard({
           onChange={handleChange}
           onBlur={handleBlur}
         />
+        <span className={styles.unit}>{unitSuffix(unit)}</span>
       </div>
-      <span className={styles.unit}>{unitSuffix(unit)}</span>
+
+      {/* Slider */}
+      <div className={styles.sliderWrapper}>
+        <input
+          type="range"
+          className={styles.slider}
+          min={bounds.min}
+          max={bounds.max}
+          step={bounds.step}
+          value={value}
+          onChange={handleSliderChange}
+        />
+      </div>
 
       {/* Confidence badge */}
       {confidenceScore != null ? (
@@ -141,7 +184,7 @@ export function AssumptionCard({
           {confidenceScore}
         </span>
       ) : (
-        <span />
+        <span className={styles.confidenceSpacer} />
       )}
 
       {/* Reasoning tooltip */}

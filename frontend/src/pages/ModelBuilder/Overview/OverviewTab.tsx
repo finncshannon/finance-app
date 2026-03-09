@@ -23,6 +23,7 @@ function formatUpside(v: number | null): string {
 
 export function OverviewTab() {
   const activeTicker = useModelStore((s) => s.activeTicker);
+  const assumptionOverrides = useModelStore((s) => s.assumptionOverrides);
 
   const [data, setData] = useState<ModelOverviewResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -33,10 +34,16 @@ export function OverviewTab() {
     setError(null);
     setData(null);
 
+    // Send current assumption overrides so overview reflects user changes
+    const overrides = useModelStore.getState().assumptionOverrides;
+    const overridesPayload = overrides && Object.keys(overrides).length > 0
+      ? overrides
+      : undefined;
+
     try {
       const result = await api.post<ModelOverviewResult>(
         `/api/v1/model-builder/${ticker}/overview`,
-        {},
+        { overrides: overridesPayload },
       );
       setData(result);
     } catch (err) {
@@ -47,6 +54,7 @@ export function OverviewTab() {
     }
   }, []);
 
+  // Re-fetch when ticker changes or when overrides change (e.g. switching back from Assumptions tab)
   useEffect(() => {
     if (activeTicker) {
       void fetchOverview(activeTicker);
@@ -54,7 +62,8 @@ export function OverviewTab() {
       setData(null);
       setError(null);
     }
-  }, [activeTicker, fetchOverview]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTicker, assumptionOverrides, fetchOverview]);
 
   // No ticker
   if (!activeTicker) {

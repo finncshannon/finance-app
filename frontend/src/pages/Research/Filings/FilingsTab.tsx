@@ -40,11 +40,15 @@ export function FilingsTab({ ticker }: FilingsTabProps) {
     fetchFilings();
   }, [ticker, formFilter, fetchFilings, setSelectedFilingId]);
 
+  const [loadingSections, setLoadingSections] = useState(false);
+
   useEffect(() => {
     if (!selectedFilingId) { setSections([]); return; }
+    setLoadingSections(true);
     api.get<{ sections: FilingSection[] }>(`/api/v1/research/${ticker}/filing/${selectedFilingId}`)
       .then((d) => setSections(d.sections))
-      .catch(() => setSections([]));
+      .catch(() => setSections([]))
+      .finally(() => setLoadingSections(false));
   }, [ticker, selectedFilingId]);
 
   const handleSelectFiling = useCallback((id: number) => {
@@ -114,7 +118,16 @@ export function FilingsTab({ ticker }: FilingsTabProps) {
         <div className={styles.panels ?? ''}>
           <FilingList filings={filings} selectedId={selectedFilingId} onSelect={handleSelectFiling} />
           {selectedFilingId ? (
-            <FilingSectionViewer sections={sections} activeKey={selectedSection} onSectionSelect={handleSectionSelect} />
+            loadingSections ? (
+              <div className={styles.empty ?? ''}>Downloading & parsing filing...</div>
+            ) : (
+              <FilingSectionViewer
+                sections={sections}
+                activeKey={selectedSection}
+                onSectionSelect={handleSectionSelect}
+                docUrl={filings.find((f) => f.id === selectedFilingId)?.doc_url ?? null}
+              />
+            )
           ) : (
             <div className={styles.empty ?? ''}>Select a filing to view</div>
           )}

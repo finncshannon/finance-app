@@ -304,6 +304,7 @@ class DashboardService:
             events.append({
                 "date": row.get("event_date", ""),
                 "ticker": ticker,
+                "company_name": row.get("company_name", ""),
                 "event_type": row.get("event_type", ""),
                 "detail": row.get("description", ""),
                 "source": ticker_source.get(ticker, "market"),

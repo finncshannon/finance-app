@@ -5,14 +5,21 @@
   overflow: hidden;
 }
 
-/* ── Ticker Search Bar ── */
-.searchBar {
+/* ── Top Bar ── */
+.topBar {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-4);
   padding: var(--space-3) var(--space-6);
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
+  background: var(--bg-secondary);
+}
+
+.searchGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .searchInput {
@@ -55,49 +62,45 @@
   background: var(--accent-hover);
 }
 
-/* ── Ticker Header ── */
-.tickerHeader {
+/* ── Navigation Group (back button + view label) ── */
+.navGroup {
   display: flex;
-  align-items: baseline;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-6);
-  border-bottom: 1px solid var(--border-subtle);
-  flex-shrink: 0;
-}
-
-.tickerSymbol {
-  font-size: 20px;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  color: var(--text-primary);
-}
-
-.companyName {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.priceGroup {
-  margin-left: auto;
-  display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-3);
+  margin-left: var(--space-2);
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--border-subtle);
 }
 
-.price {
-  font-size: 18px;
+.backBtn {
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  color: #FF9F1C;
+  font-size: 13px;
   font-weight: 600;
   font-family: var(--font-mono);
-  color: var(--text-primary);
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, border-color 0.15s;
 }
 
-.priceChange {
-  font-size: 13px;
+.backBtn:hover {
+  background: var(--bg-tertiary);
+  border-color: #FF9F1C;
+}
+
+.viewLabel {
   font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
 }
 
-/* ── Tab Content ── */
-.tabContent {
+/* ── Content Area ── */
+.content {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -117,11 +120,6 @@
   font-size: 16px;
   font-weight: 500;
   color: var(--text-secondary);
-}
-
-.emptySubtitle {
-  font-size: 13px;
-  color: var(--text-tertiary);
 }
 
 /* ── Loading ── */

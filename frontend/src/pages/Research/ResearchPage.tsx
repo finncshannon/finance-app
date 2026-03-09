@@ -1,30 +1,32 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUIStore } from '../../stores/uiStore';
 import { useResearchStore } from '../../stores/researchStore';
-import { Tabs } from '../../components/ui/Tabs/Tabs';
-import { TickerHeaderBar } from '../../components/ui/TickerHeaderBar/TickerHeaderBar';
 import { WatchlistPicker } from '../../components/ui/WatchlistPicker/WatchlistPicker';
 import { useTickerNavigation } from '../../hooks/useTickerNavigation';
 import { api } from '../../services/api';
 import type { CompanyProfile } from './types';
+import { FunctionGrid } from './FunctionGrid/FunctionGrid';
 import { FilingsTab } from './Filings/FilingsTab';
 import { FinancialsTab } from './Financials/FinancialsTab';
 import { RatiosTab } from './Ratios/RatiosTab';
 import { ProfileTab } from './Profile/ProfileTab';
 import { PeersTab } from './Peers/PeersTab';
+import { NewsTab } from './News/NewsTab';
 import { PriceChart } from './PriceChart/PriceChart';
 import styles from './ResearchPage.module.css';
 
-const TABS = [
-  { id: 'filings', label: 'Filings' },
-  { id: 'financials', label: 'Financials' },
-  { id: 'ratios', label: 'Ratios' },
-  { id: 'profile', label: 'Profile' },
-  { id: 'peers', label: 'Peers' },
-];
+const VIEW_LABELS: Record<string, string> = {
+  chart: 'GP  Price Chart',
+  financials: 'FA  Financial Analysis',
+  ratios: 'RV  Ratios & Valuation',
+  filings: 'CACS  SEC Filings',
+  profile: 'DES  Description',
+  peers: 'COMP  Peer Comparison',
+  news: 'NEWS  News & Headlines',
+};
 
 export function ResearchPage() {
-  const activeSubTab = useUIStore((s) => s.activeSubTabs['research'] ?? 'filings');
+  const activeSubTab = useUIStore((s) => s.activeSubTabs['research'] ?? 'home');
   const setSubTab = useUIStore((s) => s.setSubTab);
   const selectedTicker = useResearchStore((s) => s.selectedTicker);
   const setSelectedTicker = useResearchStore((s) => s.setSelectedTicker);
@@ -34,12 +36,11 @@ export function ResearchPage() {
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  // Sync input when store changes externally (e.g. navigation from Scanner/Dashboard)
   useEffect(() => {
     setTickerInput(selectedTicker);
   }, [selectedTicker]);
 
-  const { handleHeaderNavigate, showWatchlistPicker, setShowWatchlistPicker, openInModelBuilder } =
+  const { showWatchlistPicker, setShowWatchlistPicker } =
     useTickerNavigation(selectedTicker);
 
   const loadProfile = useCallback(async (ticker: string) => {
@@ -68,6 +69,7 @@ export function ResearchPage() {
     if (t) {
       setSelectedTicker(t);
       setTickerInput(t);
+      setSubTab('research', 'home');
     }
   };
 
@@ -75,74 +77,69 @@ export function ResearchPage() {
     if (e.key === 'Enter') handleSearch();
   };
 
-  const renderTab = () => {
+  const goHome = () => setSubTab('research', 'home');
+  const goToFunction = (id: string) => setSubTab('research', id);
+
+  const isHome = activeSubTab === 'home';
+
+  const renderView = () => {
     if (!selectedTicker) return null;
     switch (activeSubTab) {
-      case 'filings': return <FilingsTab ticker={selectedTicker} />;
-      case 'financials': return <FinancialsTab ticker={selectedTicker} />;
-      case 'ratios': return <RatiosTab ticker={selectedTicker} />;
-      case 'profile': return <ProfileTab ticker={selectedTicker} profile={profile} />;
-      case 'peers': return <PeersTab ticker={selectedTicker} />;
-      default: return null;
+      case 'home':
+        return (
+          <FunctionGrid
+            ticker={selectedTicker}
+            profile={profile}
+            onSelectFunction={goToFunction}
+          />
+        );
+      case 'chart':
+        return <PriceChart ticker={selectedTicker} />;
+      case 'financials':
+        return <FinancialsTab ticker={selectedTicker} />;
+      case 'ratios':
+        return <RatiosTab ticker={selectedTicker} />;
+      case 'filings':
+        return <FilingsTab ticker={selectedTicker} />;
+      case 'profile':
+        return <ProfileTab ticker={selectedTicker} profile={profile} />;
+      case 'peers':
+        return <PeersTab ticker={selectedTicker} />;
+      case 'news':
+        return <NewsTab ticker={selectedTicker} />;
+      default:
+        return null;
     }
   };
 
-  const quote = profile?.quote;
-
   return (
     <div className={styles.page}>
-      {/* Search Bar */}
-      <div className={styles.searchBar}>
-        <input
-          className={styles.searchInput}
-          type="text"
-          placeholder="Enter ticker..."
-          value={tickerInput}
-          onChange={(e) => setTickerInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <button className={styles.searchBtn} onClick={handleSearch}>Go</button>
+      {/* Top bar */}
+      <div className={styles.topBar}>
+        <div className={styles.searchGroup}>
+          <input
+            className={styles.searchInput}
+            type="text"
+            placeholder="Ticker..."
+            value={tickerInput}
+            onChange={(e) => setTickerInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <button className={styles.searchBtn} onClick={handleSearch}>Go</button>
+        </div>
+
+        {!isHome && selectedTicker && (
+          <div className={styles.navGroup}>
+            <button className={styles.backBtn} onClick={goHome}>
+              &larr; {selectedTicker}
+            </button>
+            <span className={styles.viewLabel}>{VIEW_LABELS[activeSubTab] ?? activeSubTab}</span>
+          </div>
+        )}
       </div>
 
-      {/* Ticker Header */}
-      {selectedTicker && profile && quote && (
-        <TickerHeaderBar
-          ticker={selectedTicker}
-          companyName={profile.company_name}
-          sector={profile.sector}
-          industry={profile.industry}
-          exchange={profile.exchange}
-          price={quote.current_price ?? 0}
-          dayChange={quote.day_change ?? 0}
-          dayChangePct={quote.day_change_pct ?? 0}
-          volume={quote.volume}
-          onNavigate={handleHeaderNavigate}
-        />
-      )}
-
-      {/* Price Chart */}
-      {selectedTicker && <PriceChart ticker={selectedTicker} />}
-
-      {/* Build Model button */}
-      {selectedTicker && (
-        <div className={styles.searchBar} style={{ borderBottom: 'none', paddingTop: 0 }}>
-          <button className={styles.searchBtn} onClick={openInModelBuilder}>
-            Build Model
-          </button>
-        </div>
-      )}
-
-      {/* Tabs */}
-      {selectedTicker && (
-        <Tabs
-          tabs={TABS}
-          activeTab={activeSubTab}
-          onTabChange={(id) => setSubTab('research', id)}
-        />
-      )}
-
       {/* Content */}
-      <div className={styles.tabContent}>
+      <div className={styles.content}>
         {loading && !profile ? (
           <div className={styles.loading}>Loading...</div>
         ) : loadError ? (
@@ -154,13 +151,10 @@ export function ResearchPage() {
           </div>
         ) : !selectedTicker ? (
           <div className={styles.emptyState}>
-            <div className={styles.emptyTitle}>Enter a ticker above to begin research</div>
-            <div className={styles.emptySubtitle}>
-              Search for a company to view filings, financial statements, ratios, and more.
-            </div>
+            <div className={styles.emptyTitle}>Enter a ticker to begin research</div>
           </div>
         ) : (
-          renderTab()
+          renderView()
         )}
       </div>
 

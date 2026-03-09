@@ -26,9 +26,32 @@ type ModelResult = DCFResult | DDMResult | CompsResult | RevBasedResult;
 export function ModelTab({ modelType }: ModelTabProps) {
   const activeTicker = useModelStore((s) => s.activeTicker);
 
-  const [result, setResult] = useState<ModelResult | null>(null);
+  // Restore cached result on mount if it matches current ticker+model
+  const [result, setResultLocal] = useState<ModelResult | null>(() => {
+    const { cachedModelResult, cachedModelMeta } = useModelStore.getState();
+    if (
+      cachedModelMeta &&
+      cachedModelMeta.ticker === useModelStore.getState().activeTicker &&
+      cachedModelMeta.modelType === modelType &&
+      cachedModelResult
+    ) {
+      return cachedModelResult as ModelResult;
+    }
+    return null;
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Wrap setResult to also cache in store
+  const setResult = useCallback(
+    (r: ModelResult | null) => {
+      setResultLocal(r);
+      if (r && activeTicker && modelType) {
+        useModelStore.getState().setCachedModelResult(activeTicker, modelType, r);
+      }
+    },
+    [activeTicker, modelType],
+  );
 
   const runModel = useCallback(
     async (ticker: string, type: ModelType, body?: Record<string, unknown>) => {
@@ -37,10 +60,15 @@ export function ModelTab({ modelType }: ModelTabProps) {
       setResult(null);
 
       const endpoint = MODEL_ENDPOINTS[type];
+      // Include assumption overrides from the store so model uses user's changes
+      const storeOverrides = useModelStore.getState().assumptionOverrides;
+      const overridesPayload = storeOverrides && Object.keys(storeOverrides).length > 0
+        ? storeOverrides
+        : undefined;
       try {
         const data = await api.post<ModelResult & { model_id?: number }>(
           `/api/v1/model-builder/${ticker}/run/${endpoint}`,
-          body ?? {},
+          { overrides: overridesPayload, ...body },
         );
         setResult(data);
         // Set activeModelId from response so History/Export work immediately
@@ -57,11 +85,21 @@ export function ModelTab({ modelType }: ModelTabProps) {
     [],
   );
 
-  // Re-run when ticker or model type changes
+  // Re-run when ticker or model type changes (skip if cache matches)
   useEffect(() => {
     if (!activeTicker || !modelType) {
-      setResult(null);
+      setResultLocal(null);
       setError(null);
+      return;
+    }
+    const { cachedModelMeta, cachedModelResult } = useModelStore.getState();
+    if (
+      cachedModelMeta &&
+      cachedModelMeta.ticker === activeTicker &&
+      cachedModelMeta.modelType === modelType &&
+      cachedModelResult
+    ) {
+      setResultLocal(cachedModelResult as ModelResult);
       return;
     }
     runModel(activeTicker, modelType);

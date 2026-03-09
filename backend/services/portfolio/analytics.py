@@ -13,11 +13,14 @@ from .models import DailySnapshot, CashFlow, PerformanceResult
 
 logger = logging.getLogger("finance_app")
 
-# Period definitions (approximate trading days)
+# Period definitions (calendar days)
 PERIOD_DAYS = {
+    "1D": 1, "3D": 3, "5D": 5, "2W": 14,
     "1M": 30, "3M": 90, "6M": 180, "YTD": None,
     "1Y": 365, "3Y": 1095, "5Y": 1825, "ALL": None,
 }
+
+SHORT_PERIODS = {"1D", "3D", "5D"}
 
 
 class PortfolioAnalytics:
@@ -30,66 +33,82 @@ class PortfolioAnalytics:
     async def compute_performance(
         self, account: str | None = None, period: str = "1Y",
     ) -> PerformanceResult:
-        """Compute full performance metrics for a given period."""
-        today = date.today()
-        start = self._period_start(today, period)
+        """Compute full performance metrics for a given period.
 
-        # Build daily valuation series
-        daily = await self.build_daily_valuation_series(
-            start.isoformat(), today.isoformat(), account,
+        TWR and risk metrics are always computed from the full daily history
+        so they remain stable regardless of the chart period selected.
+        The `period` parameter only controls `daily_values` (chart data).
+        """
+        today = date.today()
+
+        # Always build the full daily series for stable TWR / risk metrics
+        all_start = self._period_start(today, "ALL")
+        full_daily = await self.build_daily_valuation_series(
+            all_start.isoformat(), today.isoformat(), account,
         )
 
-        if len(daily) < 2:
-            return PerformanceResult(daily_values=daily)
+        if len(full_daily) < 2:
+            return PerformanceResult(daily_values=full_daily)
 
-        values = [d.portfolio_value for d in daily]
-        returns = self._daily_returns(values)
-
-        # TWR across multiple periods
+        # TWR across all standard periods (always from full history)
         twr_dict: dict[str, float | None] = {}
-        for p in ["1M", "3M", "6M", "YTD", "1Y", "3Y", "ALL"]:
-            p_start = self._period_start(today, p)
-            p_daily = [d for d in daily if d.date >= p_start.isoformat()]
+        for p in ["1D", "3D", "5D", "2W", "1M", "3M", "6M", "YTD", "1Y", "3Y", "ALL"]:
+            p_start = self._period_start(today, p).isoformat()
+            p_daily = [d for d in full_daily if d.date >= p_start]
             if len(p_daily) >= 2:
                 p_values = [d.portfolio_value for d in p_daily]
                 twr_dict[p] = round(self.compute_twr(p_values), 4)
             else:
                 twr_dict[p] = None
 
-        # Cash flows for MWRR
-        cash_flows = [CashFlow(date=d.date, amount=d.cash_flow) for d in daily if d.cash_flow != 0]
-        ending_value = values[-1] if values else 0
-        mwrr = self.compute_mwrr(cash_flows, ending_value, values[0] if values else 0)
+        # MWRR from full history
+        full_values = [d.portfolio_value for d in full_daily]
+        cash_flows = [CashFlow(date=d.date, amount=d.cash_flow) for d in full_daily if d.cash_flow != 0]
+        ending_value = full_values[-1] if full_values else 0
+        mwrr = self.compute_mwrr(cash_flows, ending_value, full_values[0] if full_values else 0)
 
-        # Annualize MWRR
-        days = (today - start).days
-        mwrr_ann = ((1 + mwrr) ** (365 / max(days, 1)) - 1) if mwrr is not None else None
+        # Annualize MWRR over the full holding period
+        first_date = date.fromisoformat(full_daily[0].date[:10])
+        holding_days = (today - first_date).days
+        mwrr_ann = ((1 + mwrr) ** (365 / max(holding_days, 1)) - 1) if mwrr is not None else None
 
-        # Benchmark returns for beta/tracking error
-        bench_bars = await self.mds.get_historical("SPY", self._period_string(period))
+        # Risk metrics from 1Y daily data (stable baseline)
+        one_year_start = self._period_start(today, "1Y").isoformat()
+        risk_daily = [d for d in full_daily if d.date >= one_year_start]
+        risk_values = [d.portfolio_value for d in risk_daily]
+        risk_returns = self._daily_returns(risk_values)
+
+        # Benchmark returns for beta/tracking error (1Y)
+        bench_bars = await self.mds.get_historical("SPY", "1y")
         bench_returns = []
         if bench_bars and len(bench_bars) >= 2:
             bench_prices = [b.close for b in bench_bars]
             bench_returns = self._daily_returns(bench_prices)
 
-        # Risk metrics
         rf_daily = 0.05 / 252  # Approximate 5% annual risk-free rate
+
+        # Chart data for the requested period
+        if period in SHORT_PERIODS:
+            chart_daily = await self.build_hourly_valuation_series(period, account)
+        else:
+            chart_start = self._period_start(today, period).isoformat()
+            chart_daily = [d for d in full_daily if d.date >= chart_start]
 
         result = PerformanceResult(
             twr=twr_dict,
             mwrr=round(mwrr, 4) if mwrr is not None else None,
             mwrr_annualized=round(mwrr_ann, 4) if mwrr_ann is not None else None,
-            sharpe_ratio=self._safe_round(self.compute_sharpe(returns, rf_daily)),
-            sortino_ratio=self._safe_round(self.compute_sortino(returns, rf_daily)),
-            max_drawdown=self._safe_round(self.compute_max_drawdown(values)),
-            volatility=self._safe_round(self.compute_volatility(returns)),
-            daily_values=daily,
+            sharpe_ratio=self._safe_round(self.compute_sharpe(risk_returns, rf_daily)),
+            sortino_ratio=self._safe_round(self.compute_sortino(risk_returns, rf_daily)),
+            max_drawdown=self._safe_round(self.compute_max_drawdown(risk_values)),
+            volatility=self._safe_round(self.compute_volatility(risk_returns)),
+            daily_values=chart_daily,
         )
 
-        if bench_returns and len(bench_returns) == len(returns):
-            result.beta = self._safe_round(self.compute_beta(returns, bench_returns))
-            result.tracking_error = self._safe_round(self.compute_tracking_error(returns, bench_returns))
-            result.information_ratio = self._safe_round(self.compute_information_ratio(returns, bench_returns))
+        if bench_returns and len(bench_returns) == len(risk_returns):
+            result.beta = self._safe_round(self.compute_beta(risk_returns, bench_returns))
+            result.tracking_error = self._safe_round(self.compute_tracking_error(risk_returns, bench_returns))
+            result.information_ratio = self._safe_round(self.compute_information_ratio(risk_returns, bench_returns))
 
         return result
 
@@ -97,21 +116,24 @@ class PortfolioAnalytics:
     # Daily valuation series
     # ==================================================================
 
+    async def _get_positions(self, account: str | None = None) -> list[dict]:
+        """Get current portfolio positions."""
+        where = "WHERE account = ?" if account else ""
+        params = (account,) if account else ()
+        return await self.db.fetchall(
+            f"SELECT ticker, shares_held FROM portfolio_positions {where} ORDER BY ticker",
+            params,
+        )
+
     async def build_daily_valuation_series(
         self, start_date: str, end_date: str, account: str | None = None,
     ) -> list[DailySnapshot]:
         """Build daily portfolio value from positions + historical prices.
 
         Simplified approach: uses current position snapshot × historical prices.
+        Skips weekends to align with benchmark (trading days only).
         """
-        # Get current positions
-        where = "WHERE account = ?" if account else ""
-        params = (account,) if account else ()
-        positions = await self.db.fetchall(
-            f"SELECT ticker, shares_held FROM portfolio_positions {where} ORDER BY ticker",
-            params,
-        )
-
+        positions = await self._get_positions(account)
         if not positions:
             return []
 
@@ -122,16 +144,21 @@ class PortfolioAnalytics:
             bars = await self.mds.get_historical(ticker, "5y")
             if bars:
                 ticker_histories[ticker] = {
-                    bar.date.isoformat(): bar.close for bar in bars
+                    bar.date: bar.close for bar in bars
                 }
 
-        # Build date range
+        # Build date range (trading days only)
         start = date.fromisoformat(start_date)
         end = date.fromisoformat(end_date)
         snapshots: list[DailySnapshot] = []
         current = start
 
         while current <= end:
+            # Skip weekends
+            if current.weekday() > 4:
+                current += timedelta(days=1)
+                continue
+
             date_str = current.isoformat()
             total = 0.0
             has_data = False
@@ -162,6 +189,52 @@ class PortfolioAnalytics:
                 ))
 
             current += timedelta(days=1)
+
+        return snapshots
+
+    async def build_hourly_valuation_series(
+        self, period: str, account: str | None = None,
+    ) -> list[DailySnapshot]:
+        """Build hourly portfolio value from positions + hourly price bars.
+
+        Used for short periods (1D, 3D, 5D) to provide intraday resolution.
+        """
+        positions = await self._get_positions(account)
+        if not positions:
+            return []
+
+        today = date.today()
+        period_days = PERIOD_DAYS.get(period, 5)
+        start_str = (today - timedelta(days=period_days)).isoformat()
+
+        # Fetch hourly bars for each ticker
+        ticker_prices: dict[str, dict[str, float]] = {}
+        all_timestamps: set[str] = set()
+
+        for pos in positions:
+            ticker = pos["ticker"]
+            bars = await self.mds.get_historical(ticker, "5d", "1h")
+            if bars:
+                price_map = {bar.date: bar.close for bar in bars}
+                ticker_prices[ticker] = price_map
+                all_timestamps.update(price_map.keys())
+
+        # Sort and filter timestamps to the requested period
+        sorted_ts = sorted(ts for ts in all_timestamps if ts[:10] >= start_str)
+
+        snapshots: list[DailySnapshot] = []
+        for ts in sorted_ts:
+            total = 0.0
+            has_data = False
+            for pos in positions:
+                ticker = pos["ticker"]
+                shares = pos["shares_held"]
+                price = ticker_prices.get(ticker, {}).get(ts)
+                if price:
+                    total += shares * price
+                    has_data = True
+            if has_data:
+                snapshots.append(DailySnapshot(date=ts, portfolio_value=round(total, 2)))
 
         return snapshots
 
@@ -347,6 +420,7 @@ class PortfolioAnalytics:
     def _period_string(period: str) -> str:
         """Convert period to yfinance-compatible string."""
         mapping = {
+            "1D": "5d", "3D": "5d", "5D": "1mo", "2W": "1mo",
             "1M": "1mo", "3M": "3mo", "6M": "6mo",
             "YTD": "ytd", "1Y": "1y", "3Y": "3y", "5Y": "5y", "ALL": "max",
         }

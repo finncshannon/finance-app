@@ -16,6 +16,7 @@ from routers import (
     dashboard_router,
     export_router,
     models_router,
+    news_router,
     portfolio_router,
     research_router,
     scanner_router,
@@ -127,7 +128,7 @@ async def lifespan(app: FastAPI):
     from services.scanner import ScannerService
 
     scanner_repo = ScannerRepo(db)
-    scanner_svc = ScannerService(db, scanner_repo)
+    scanner_svc = ScannerService(db, scanner_repo, market_data_svc=market_data_svc)
     app.state.scanner_service = scanner_svc
     app.state.scanner_repo = scanner_repo
     logger.info("Scanner service initialized.")
@@ -249,6 +250,15 @@ async def lifespan(app: FastAPI):
     app.state.filing_repo = filing_repo
     app.state.research_repo = research_repo
     logger.info("Research service initialized.")
+
+    # Initialize news service with DB persistence
+    from repositories.news_repo import NewsRepo
+    from services.news_service import NewsService
+
+    news_repo = NewsRepo(db)
+    news_svc = NewsService(news_repo=news_repo)
+    app.state.news_service = news_svc
+    logger.info("News service initialized (with DB persistence).")
 
     # Initialize price refresh service + start background loops
     from services.price_refresh_service import (
@@ -405,6 +415,7 @@ app.include_router(models_router.router)
 app.include_router(scanner_router.router)
 app.include_router(portfolio_router.router)
 app.include_router(research_router.router)
+app.include_router(news_router.router)
 app.include_router(dashboard_router.router)
 app.include_router(settings_router.router)
 app.include_router(export_router.router)

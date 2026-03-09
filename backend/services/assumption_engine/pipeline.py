@@ -6,6 +6,7 @@ This is the main entry point for generating valuation assumptions.
 from __future__ import annotations
 
 import logging
+import re
 import statistics
 from datetime import datetime, timezone
 
@@ -148,8 +149,23 @@ class AssumptionEngine:
             scenarios.uncertainty_score, scenarios.spread * 100,
         )
 
-        # Model-specific mappings
+        # ---- APPLY OVERRIDES ----
+        # Apply scenario overrides BEFORE model mappings so engines see the changes
+        overrides_applied = self._apply_overrides(scenarios, overrides)
+
+        # Track WACC component overrides
+        for k in overrides:
+            if k.startswith("wacc_breakdown."):
+                overrides_applied.append(k)
+
+        # Model-specific mappings (uses overridden scenarios)
         model_assumptions = map_all_models(data, scenarios.base, revenue, wacc_result)
+
+        # Apply model_assumptions overrides (post-mapping, e.g. capex_to_revenue)
+        ma_overrides = {k: v for k, v in overrides.items() if k.startswith("model_assumptions.")}
+        if ma_overrides:
+            self._apply_model_overrides(model_assumptions, ma_overrides)
+            overrides_applied.extend(ma_overrides.keys())
 
         # Confidence scoring
         confidence = score_confidence(data, revenue, margin_results, wacc_result)
@@ -157,15 +173,6 @@ class AssumptionEngine:
 
         # Reasoning
         reasoning = generate_reasoning(data, revenue, margin_results, wacc_result, scenarios)
-
-        # ---- OUTPUT ----
-        # Apply user overrides (post-synthesis)
-        overrides_applied = self._apply_overrides(scenarios, overrides)
-
-        # Track WACC component overrides
-        for k in overrides:
-            if k.startswith("wacc_breakdown."):
-                overrides_applied.append(k)
 
         # Data quality score (0–1)
         dq_score = confidence.overall_score / 100.0
@@ -247,27 +254,75 @@ class AssumptionEngine:
         scenarios: ScenarioSet,
         overrides: dict,
     ) -> list[str]:
-        """Apply user overrides to scenarios. Returns list of applied keys."""
+        """Apply user overrides to scenarios. Returns list of applied keys.
+
+        Handles frontend paths like:
+          - scenarios.base.revenue_growth_rates[0]
+          - scenarios.base.wacc
+          - base.wacc  (legacy format)
+        """
         applied: list[str] = []
 
         for key, value in overrides.items():
-            if key.startswith("wacc_breakdown."):
-                continue  # handled in pipeline before scenario generation
-            parts = key.split(".", 1)
-            if len(parts) == 2:
-                scenario_name, field = parts
+            if key.startswith("wacc_breakdown.") or key.startswith("model_assumptions."):
+                continue  # handled separately
+
+            work_key = key
+            # Strip leading "scenarios." prefix from frontend paths
+            if work_key.startswith("scenarios."):
+                work_key = work_key[len("scenarios."):]
+
+            # Parse: scenario_name.field_name[optional_index]
+            match = re.match(r'^(base|bull|bear)\.(\w+)(?:\[(\d+)\])?$', work_key)
+            if match:
+                scenario_name = match.group(1)
+                field = match.group(2)
+                index_str = match.group(3)
+
                 scenario = getattr(scenarios, scenario_name, None)
-                if scenario and hasattr(scenario, field):
+                if scenario is None:
+                    continue
+
+                if index_str is not None:
+                    # Array element override
+                    arr = getattr(scenario, field, None)
+                    if isinstance(arr, list):
+                        idx = int(index_str)
+                        if 0 <= idx < len(arr):
+                            arr[idx] = value
+                            applied.append(key)
+                            logger.info("Override applied: %s = %s", key, value)
+                elif hasattr(scenario, field):
                     setattr(scenario, field, value)
                     applied.append(key)
                     logger.info("Override applied: %s = %s", key, value)
             elif hasattr(scenarios.base, key):
-                # Apply to base scenario
+                # Direct field on base scenario (legacy)
                 setattr(scenarios.base, key, value)
                 applied.append(key)
                 logger.info("Override applied to base: %s = %s", key, value)
 
         return applied
+
+    @staticmethod
+    def _apply_model_overrides(
+        model_assumptions,
+        overrides: dict,
+    ) -> None:
+        """Apply overrides to model_assumptions (DCF, DDM, etc.).
+
+        Handles paths like: model_assumptions.dcf.capex_to_revenue
+        """
+        for key, value in overrides.items():
+            match = re.match(r'^model_assumptions\.(dcf|ddm|comps|revenue_based)\.(\w+)$', key)
+            if not match:
+                continue
+            model_name = match.group(1)
+            field = match.group(2)
+            bucket = getattr(model_assumptions, model_name, None)
+            if bucket is not None and hasattr(bucket, field):
+                setattr(bucket, field, value)
+                logger.info("Model override applied: %s = %s", key, value)
 
     @staticmethod
     def _fallback_result(ticker: str, error_msg: str) -> AssumptionSet:

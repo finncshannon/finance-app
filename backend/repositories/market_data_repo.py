@@ -201,12 +201,14 @@ class MarketDataRepo:
         )
         total = count_row["cnt"] if count_row else 0
 
-        # Fetch page
+        # Fetch page (join companies for company_name)
         fetch_params = list(params) + [limit, offset]
         rows = await self.db.fetchall(
-            f"""SELECT * FROM cache.company_events
-                WHERE {where_sql}
-                ORDER BY event_date ASC
+            f"""SELECT e.*, c.company_name
+                FROM cache.company_events e
+                LEFT JOIN companies c ON e.ticker = c.ticker
+                WHERE {where_sql.replace('ticker', 'e.ticker').replace('event_date', 'e.event_date').replace('event_type', 'e.event_type')}
+                ORDER BY e.event_date ASC
                 LIMIT ? OFFSET ?""",
             tuple(fetch_params),
         )

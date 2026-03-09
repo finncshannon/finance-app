@@ -6,7 +6,7 @@ const MODULE_SUB_TABS: Record<string, string[]> = {
   'model-builder': ['overview', 'assumptions', 'projections', 'sensitivity', 'history'],
   scanner: ['screens', 'filters', 'results', 'universe'],
   portfolio: ['holdings', 'performance', 'allocation', 'income', 'transactions', 'alerts', 'upcoming-events'],
-  research: ['profile', 'financials', 'ratios', 'filings', 'segments', 'peers'],
+  research: ['home', 'chart', 'profile', 'financials', 'ratios', 'filings', 'segments', 'peers'],
   settings: ['general', 'data-sources', 'defaults', 'about'],
 };
 
@@ -55,7 +55,7 @@ export const useUIStore = create<UIState>((set) => ({
     'model-builder': 'overview',
     scanner: 'screens',
     portfolio: 'holdings',
-    research: 'profile',
+    research: 'home',
     settings: 'general',
   },
   activeSensitivityTab: 'sliders',

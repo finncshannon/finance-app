@@ -68,11 +68,11 @@ async def get_quote(request: Request, ticker: str):
 
 
 @router.get("/{ticker}/historical")
-async def get_historical(request: Request, ticker: str, period: str = "1y"):
+async def get_historical(request: Request, ticker: str, period: str = "1y", interval: str = "1d"):
     """Get historical OHLCV price bars."""
     t0 = time.monotonic()
     market_svc = request.app.state.market_data_service
-    bars = await market_svc.get_historical(ticker, period)
+    bars = await market_svc.get_historical(ticker, period, interval)
     ms = int((time.monotonic() - t0) * 1000)
     return success_response(
         data=[b.model_dump() for b in bars],

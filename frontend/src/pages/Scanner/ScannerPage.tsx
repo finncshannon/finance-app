@@ -113,7 +113,15 @@ export function ScannerPage() {
       });
       setResults(result);
     } catch (err) {
-      setScanError(err instanceof Error ? err.message : 'Scan failed');
+      const msg = err instanceof Error ? err.message : 'Scan failed';
+      // Only show timeout for actual AbortController timeout (4 min)
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setScanError('Request timed out after 4 minutes. Try narrowing your filters.');
+      } else if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+        setScanError('Could not reach backend — is the server running?');
+      } else {
+        setScanError(msg);
+      }
     } finally {
       setLoading(false);
     }

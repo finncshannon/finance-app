@@ -14,10 +14,6 @@ interface TreemapItem {
   sector?: string;
 }
 
-const SECTOR_BG: Record<string, string> = {
-  ETF: 'rgba(124, 58, 237, 0.25)',
-  Unknown: 'rgba(82, 82, 82, 0.25)',
-};
 
 function clamp(val: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, val));
@@ -87,9 +83,7 @@ export function Treemap({ positions }: Props) {
           style={{
             flexBasis: `${Math.max(item.weight * 100, 8)}%`,
             flexGrow: item.weight * 100,
-            background: item.sector && SECTOR_BG[item.sector]
-              ? SECTOR_BG[item.sector]
-              : gainBackground(item.gainPct),
+            background: gainBackground(item.gainPct),
           }}
         >
           <span className={styles.ticker}>{item.label}</span>

@@ -7,9 +7,10 @@ interface FilingSectionViewerProps {
   sections: FilingSection[];
   activeKey: string | null;
   onSectionSelect: (key: string) => void;
+  docUrl: string | null;
 }
 
-export function FilingSectionViewer({ sections, activeKey, onSectionSelect }: FilingSectionViewerProps) {
+export function FilingSectionViewer({ sections, activeKey, onSectionSelect, docUrl }: FilingSectionViewerProps) {
   useEffect(() => {
     if (!activeKey && sections.length > 0) {
       onSectionSelect(sections[0]!.section_key);
@@ -17,7 +18,16 @@ export function FilingSectionViewer({ sections, activeKey, onSectionSelect }: Fi
   }, [activeKey, sections, onSectionSelect]);
 
   if (sections.length === 0) {
-    return <div className={styles.empty ?? ''}>No sections available</div>;
+    return (
+      <div className={styles.empty ?? ''}>
+        <div>No parsed sections available</div>
+        {docUrl && (
+          <button className={styles.secBtn ?? ''} onClick={() => window.open(docUrl, '_blank')}>
+            Open Filing on SEC.gov
+          </button>
+        )}
+      </div>
+    );
   }
 
   const active = sections.find((s) => s.section_key === activeKey);
@@ -28,7 +38,14 @@ export function FilingSectionViewer({ sections, activeKey, onSectionSelect }: Fi
       <div className={styles.content ?? ''}>
         {active ? (
           <>
-            <h2 className={styles.sectionTitle ?? ''}>{active.section_title}</h2>
+            <div className={styles.sectionHeader ?? ''}>
+              <h2 className={styles.sectionTitle ?? ''}>{active.section_title}</h2>
+              {docUrl && (
+                <button className={styles.secBtn ?? ''} onClick={() => window.open(docUrl, '_blank')}>
+                  Open on SEC.gov
+                </button>
+              )}
+            </div>
             <div className={styles.sectionBody ?? ''}>{active.content_text}</div>
           </>
         ) : (

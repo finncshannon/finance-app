@@ -1,5 +1,6 @@
-import { Fragment, useState, useCallback } from 'react';
+import { Fragment, useState, useCallback, useRef, useEffect } from 'react';
 import { navigationService } from '../../../services/navigationService';
+import { api } from '../../../services/api';
 import type { ScannerResult, ScannerFilter, MetricDefinition } from '../types';
 import { formatMetricValue } from '../types';
 import { ResultsHeader } from './ResultsHeader';
@@ -52,6 +53,49 @@ export function ResultsTable({
     ticker: string;
   } | null>(null);
   const [textHitsOpen, setTextHitsOpen] = useState(false);
+  const [hoveredTicker, setHoveredTicker] = useState<string | null>(null);
+  const [hoverPos, setHoverPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [companyDesc, setCompanyDesc] = useState<Record<string, string>>({});
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleTickerMouseEnter = useCallback((e: React.MouseEvent, ticker: string) => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setHoverPos({ x: rect.left, y: rect.bottom + 4 });
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    hoverTimeout.current = setTimeout(() => {
+      setHoveredTicker(ticker);
+      // Fetch description if not cached
+      if (!companyDesc[ticker]) {
+        api.get<{ data?: { description?: string; company_name?: string; sector?: string; industry?: string } }>(`/api/v1/companies/${ticker}`)
+          .then((res) => {
+            const d = (res as any)?.data ?? res;
+            const desc = d?.description || d?.company_name || 'No description available';
+            const sector = d?.sector || '';
+            const industry = d?.industry || '';
+            const summary = [sector, industry].filter(Boolean).join(' · ');
+            setCompanyDesc((prev) => ({ ...prev, [ticker]: summary ? `${summary}\n${desc}` : desc }));
+          })
+          .catch(() => {
+            setCompanyDesc((prev) => ({ ...prev, [ticker]: 'Description unavailable' }));
+          });
+      }
+    }, 300);
+  }, [companyDesc]);
+
+  const handleTickerMouseLeave = useCallback(() => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    setHoveredTicker(null);
+  }, []);
+
+  const handleTickerClick = useCallback((e: React.MouseEvent, ticker: string) => {
+    e.stopPropagation();
+    navigationService.goToResearch(ticker);
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => { if (hoverTimeout.current) clearTimeout(hoverTimeout.current); };
+  }, []);
 
   const handleRowClick = useCallback((ticker: string) => {
     setExpandedTicker((prev) => (prev === ticker ? null : ticker));
@@ -184,7 +228,14 @@ export function ResultsTable({
                     onContextMenu={(e) => handleRowContextMenu(e, row.ticker)}
                   >
                     <td className={`${styles.td} ${styles.tdTicker}`}>
-                      {row.ticker}
+                      <span
+                        className={styles.tickerLink}
+                        onClick={(e) => handleTickerClick(e, row.ticker)}
+                        onMouseEnter={(e) => handleTickerMouseEnter(e, row.ticker)}
+                        onMouseLeave={handleTickerMouseLeave}
+                      >
+                        {row.ticker}
+                      </span>
                     </td>
                     <td className={`${styles.td} ${styles.tdCompany}`}>
                       {row.company_name ?? '\u2014'}
@@ -271,6 +322,19 @@ export function ResultsTable({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Ticker Hover Popup ── */}
+      {hoveredTicker && (
+        <div
+          className={styles.tickerPopup}
+          style={{ left: hoverPos.x, top: hoverPos.y }}
+        >
+          <div className={styles.popupTicker}>{hoveredTicker}</div>
+          <div className={styles.popupDesc}>
+            {companyDesc[hoveredTicker] ?? 'Loading...'}
+          </div>
         </div>
       )}
 

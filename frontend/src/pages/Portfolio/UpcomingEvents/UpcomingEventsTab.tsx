@@ -275,6 +275,9 @@ export function UpcomingEventsTab() {
                     </div>
                     <div className={styles.eventContent}>
                       <span className={styles.eventTicker}>{ev.ticker}</span>
+                      {ev.company_name && (
+                        <span className={styles.eventCompany}>{ev.company_name}</span>
+                      )}
                       <span
                         className={styles.eventDot}
                         style={{ backgroundColor: eventDotColor(ev.event_type) }}

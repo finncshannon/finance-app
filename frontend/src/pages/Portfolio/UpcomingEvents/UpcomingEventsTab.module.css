@@ -157,6 +157,15 @@
   color: var(--text-primary);
 }
 
+.eventCompany {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
 .eventDot {
   display: inline-block;
   width: 8px;

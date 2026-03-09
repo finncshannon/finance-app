@@ -147,6 +147,25 @@ CREATE TABLE IF NOT EXISTS company_events (
 
 CREATE INDEX IF NOT EXISTS idx_events_date ON company_events(event_date);
 CREATE INDEX IF NOT EXISTS idx_events_ticker ON company_events(ticker);
+
+-- 23. news_articles — persisted news feed for historical lookback
+CREATE TABLE IF NOT EXISTS news_articles (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    url             TEXT NOT NULL UNIQUE,
+    title           TEXT NOT NULL,
+    source          TEXT NOT NULL,
+    published_at    TEXT,
+    snippet         TEXT,
+    category        TEXT DEFAULT 'General',
+    region          TEXT DEFAULT 'Global',
+    coverage_count  INTEGER DEFAULT 1,
+    fetched_at      TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_news_published ON news_articles(published_at);
+CREATE INDEX IF NOT EXISTS idx_news_category ON news_articles(category);
+CREATE INDEX IF NOT EXISTS idx_news_cat_pub ON news_articles(category, published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_news_reg_pub ON news_articles(region, published_at DESC);
 """
 
 

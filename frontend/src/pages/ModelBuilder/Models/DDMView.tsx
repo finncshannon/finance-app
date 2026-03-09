@@ -266,10 +266,11 @@ export function DDMView({ result }: DDMViewProps) {
     <div className={styles.container}>
       {/* b) Results Card */}
       <ResultsCard
-        impliedPrice={result.weighted_intrinsic_value}
+        impliedPrice={scenario?.intrinsic_value_per_share ?? result.weighted_intrinsic_value}
         currentPrice={result.current_price}
-        upsidePct={result.weighted_upside_downside_pct}
+        upsidePct={scenario?.upside_downside_pct ?? result.weighted_upside_downside_pct}
         label="Intrinsic Value"
+        scenarioLabel={activeScenario !== 'base' ? SCENARIO_LABELS[activeScenario] : undefined}
         secondaryValues={secondaryValues}
         exportSlot={
           useModelStore.getState().activeModelId ? (

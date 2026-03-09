@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from models.response import success_response, error_response
 from engines import DCFEngine, DDMEngine, CompsEngine, RevBasedEngine
 from repositories.market_data_repo import MarketDataRepo
+from repositories.company_repo import CompanyRepo
 from repositories.model_repo import ModelRepo
 from services.sensitivity import SensitivityService
 from services.model_overview import ModelOverviewService
@@ -362,6 +363,7 @@ async def _gather_peer_data(
 ) -> list[dict]:
     """Fetch financial data for peer companies."""
     market_repo = MarketDataRepo(request.app.state.db)
+    company_repo = CompanyRepo(request.app.state.db)
     market_data_svc = request.app.state.market_data_service
     peers: list[dict] = []
 
@@ -376,11 +378,18 @@ async def _gather_peer_data(
             price = quote.get("current_price") or quote.get("regularMarketPrice") or 0
             shares = latest.get("shares_outstanding") or 0
 
+            # Get company name from companies table (reliable) instead of quote cache
+            company = await company_repo.get_by_ticker(pticker)
+            company_name = (company.get("company_name") or "") if company else ""
+
+            market_cap = quote.get("market_cap") or (price * shares)
+            enterprise_value = quote.get("enterprise_value") or 0
+
             peers.append({
                 "ticker": pticker.upper(),
-                "company_name": quote.get("shortName", ""),
-                "market_cap": quote.get("marketCap") or (price * shares),
-                "enterprise_value": quote.get("enterpriseValue") or 0,
+                "company_name": company_name,
+                "market_cap": market_cap,
+                "enterprise_value": enterprise_value,
                 "revenue": latest.get("revenue") or 0,
                 "ebitda": latest.get("ebitda") or 0,
                 "net_income": latest.get("net_income") or 0,

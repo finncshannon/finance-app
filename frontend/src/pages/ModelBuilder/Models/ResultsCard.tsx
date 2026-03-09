@@ -7,6 +7,7 @@ export interface ResultsCardProps {
   currentPrice: number;
   upsidePct: number | null;
   label?: string;
+  scenarioLabel?: string;
   secondaryValues?: { label: string; value: string }[];
   exportSlot?: ReactNode;
 }
@@ -16,6 +17,7 @@ export function ResultsCard({
   currentPrice,
   upsidePct,
   label = 'Implied Price',
+  scenarioLabel,
   secondaryValues,
   exportSlot,
 }: ResultsCardProps) {
@@ -25,7 +27,9 @@ export function ResultsCard({
     <div className={styles.card}>
       <div className={styles.topRow}>
         <div className={styles.priceGroup}>
-          <span className={styles.label}>{label}</span>
+          <span className={styles.label}>
+            {label}{scenarioLabel ? ` (${scenarioLabel})` : ''}
+          </span>
           <span className={styles.impliedPrice}>{fmtPrice(impliedPrice)}</span>
         </div>
 

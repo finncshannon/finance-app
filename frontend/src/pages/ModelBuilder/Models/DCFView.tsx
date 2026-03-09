@@ -154,9 +154,10 @@ export function DCFView({ result }: DCFViewProps) {
     <div className={styles.container}>
       {/* a) Results Card */}
       <ResultsCard
-        impliedPrice={result.weighted_implied_price}
+        impliedPrice={scenario?.implied_price ?? result.weighted_implied_price}
         currentPrice={result.current_price}
-        upsidePct={result.weighted_upside_downside_pct}
+        upsidePct={scenario?.upside_downside_pct ?? result.weighted_upside_downside_pct}
+        scenarioLabel={activeScenario !== 'base' ? SCENARIO_LABELS[activeScenario] : undefined}
         secondaryValues={secondaryValues}
         exportSlot={
           useModelStore.getState().activeModelId ? (

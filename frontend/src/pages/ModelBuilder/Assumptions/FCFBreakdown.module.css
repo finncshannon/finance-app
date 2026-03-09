@@ -1,4 +1,4 @@
-/* WACCBreakdown component styles */
+/* FCFBreakdown component styles — mirrors WACCBreakdown */
 
 .container {
   display: flex;
@@ -107,8 +107,7 @@
   text-align: right;
 }
 
-/* ===== Inline slider (Bloomberg-style) ===== */
-
+/* Inline slider */
 .fieldSlider {
   -webkit-appearance: none;
   appearance: none;
@@ -227,6 +226,10 @@
   margin-left: auto;
 }
 
+.computedValueNeg {
+  color: var(--color-negative);
+}
+
 .computedFormula {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -234,7 +237,7 @@
   margin-left: var(--space-2);
 }
 
-/* Final WACC formula display */
+/* FCF Margin formula display */
 .formulaDisplay {
   display: flex;
   flex-direction: column;
@@ -262,39 +265,13 @@
   color: var(--accent-primary);
 }
 
+.formulaValueNeg {
+  color: var(--color-negative);
+}
+
 .formulaEquation {
   font-family: var(--font-mono);
   font-size: 11px;
   color: var(--text-tertiary);
   text-align: center;
-}
-
-/* Linked weight note */
-.linkedNote {
-  font-family: var(--font-sans);
-  font-size: 10px;
-  color: var(--text-tertiary);
-  font-style: italic;
-  padding: 2px var(--space-2);
-}
-
-/* Warnings */
-.warningsList {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: var(--space-1) var(--space-2);
-}
-
-.warningItem {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  color: var(--color-warning);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.warningIcon {
-  font-size: 12px;
 }

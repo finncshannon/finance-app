@@ -219,11 +219,11 @@ class MarketDataService:
     # Historical prices (pass-through, no cache in DB)
     # ------------------------------------------------------------------
 
-    async def get_historical(self, ticker: str, period: str = "1y") -> list[PriceBar]:
-        """Get historical daily OHLCV bars from provider."""
+    async def get_historical(self, ticker: str, period: str = "1y", interval: str = "1d") -> list[PriceBar]:
+        """Get OHLCV bars from provider at the given interval."""
         ticker = ticker.upper()
         try:
-            return await self.provider.get_historical_prices(ticker, period)
+            return await self.provider.get_historical_prices(ticker, period, interval)
         except ProviderError as e:
             logger.warning("Provider error fetching historical for %s: %s", ticker, e)
             return []
