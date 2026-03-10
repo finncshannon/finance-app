@@ -137,6 +137,10 @@ class PortfolioService:
         """Delete position (lots cascade via FK)."""
         return await self.repo.delete_position(position_id)
 
+    async def delete_all_positions(self) -> int:
+        """Delete all positions. Returns count deleted."""
+        return await self.repo.delete_all_positions()
+
     # ==================================================================
     # Transactions
     # ==================================================================

@@ -130,11 +130,14 @@ class ResearchService:
                 doc_url = filing.get("file_path", "")
                 accession = filing.get("accession_number", "")
 
+                # Let SECEdgarEmailNotConfigured propagate to the router
+                logger.info("Filing %d: downloading %s %s (url=%s)", filing_id, ticker, form_type, doc_url or accession)
                 html = None
                 if doc_url:
                     html = await self.company_svc.sec.download_filing_by_url(doc_url)
                 elif accession and ticker:
                     html = await self.company_svc.sec.download_filing(ticker, accession)
+                logger.info("Filing %d: download result = %s", filing_id, "None" if html is None else f"{len(html)} chars")
 
                 if html:
                     if form_type in ("10-K", "10-Q"):

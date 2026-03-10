@@ -67,4 +67,14 @@
   --transition-micro: 150ms ease;
   --transition-panel: 200ms ease;
   --transition-page: 300ms ease;
+
+  /* Holographic / Glow */
+  --glow-color: rgba(59, 130, 246, 0.08);
+  --glow-color-hover: rgba(59, 130, 246, 0.15);
+  --glow-color-strong: rgba(59, 130, 246, 0.25);
+  --glow-color-boot: rgba(59, 130, 246, 0.4);
+  --hud-cyan: #3B82F6;
+  --hud-cyan-dim: rgba(59, 130, 246, 0.3);
+  --hud-grid-color: rgba(59, 130, 246, 0.04);
+  --transition-boot: 400ms ease;
 }

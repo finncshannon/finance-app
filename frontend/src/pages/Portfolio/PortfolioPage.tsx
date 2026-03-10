@@ -39,6 +39,7 @@ export function PortfolioPage() {
   const [error, setError] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const prevTickerCountRef = useRef(0);
 
@@ -208,6 +209,14 @@ export function PortfolioPage() {
               },
             ]}
           />
+          {positions.length > 0 && (
+            <button
+              className={styles.dangerBtn}
+              onClick={() => setShowClearConfirm(true)}
+            >
+              Clear All
+            </button>
+          )}
           <button className={styles.secondaryBtn} onClick={() => setShowImportModal(true)}>
             Import CSV
           </button>
@@ -246,6 +255,36 @@ export function PortfolioPage() {
           onClose={() => setShowImportModal(false)}
           onSuccess={() => { setShowImportModal(false); handleRefresh(); }}
         />
+      )}
+
+      {showClearConfirm && (
+        <div className={styles.confirmOverlay} onClick={() => setShowClearConfirm(false)}>
+          <div className={styles.confirmModal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.confirmTitle}>Clear All Positions</h3>
+            <p className={styles.confirmText}>
+              This will permanently delete all {positions.length} positions and their associated lots. This cannot be undone.
+            </p>
+            <div className={styles.confirmActions}>
+              <button className={styles.secondaryBtn} onClick={() => setShowClearConfirm(false)}>
+                Cancel
+              </button>
+              <button
+                className={styles.confirmDangerBtn}
+                onClick={async () => {
+                  setShowClearConfirm(false);
+                  try {
+                    await api.post('/api/v1/portfolio/positions/clear-all');
+                    handleRefresh();
+                  } catch {
+                    setError('Failed to clear positions');
+                  }
+                }}
+              >
+                Clear All Positions
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

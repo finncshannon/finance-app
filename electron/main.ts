@@ -1,3 +1,10 @@
+process.on('uncaughtException', (error) => {
+  console.error('[main] Uncaught exception:', error);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[main] Unhandled rejection:', reason);
+});
+
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { spawn, execSync, ChildProcess } from 'child_process';
 import * as path from 'path';
@@ -9,7 +16,7 @@ const BACKEND_HOST = '127.0.0.1';
 const BACKEND_PORT = 8000;
 const HEALTH_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}/api/v1/system/health`;
 const HEALTH_POLL_INTERVAL_MS = 100;
-const BACKEND_START_TIMEOUT_MS = 10000;
+const BACKEND_START_TIMEOUT_MS = 30000;
 const SHUTDOWN_GRACE_PERIOD_MS = 2000;
 const DEV_SERVER_URL = 'http://localhost:5174';
 
@@ -104,7 +111,7 @@ function checkPython(): PythonCheckResult {
       try {
         execSync(
           `${cmd} -c "import fastapi, uvicorn, aiosqlite"`,
-          { encoding: 'utf-8', timeout: 10000, windowsHide: true }
+          { encoding: 'utf-8', timeout: 30000, windowsHide: true }
         );
       } catch {
         return {
@@ -133,7 +140,7 @@ function checkPython(): PythonCheckResult {
 }
 
 // --- Auto-Update Check (Stub) ---
-const GITHUB_OWNER = 'your-username';
+const GITHUB_OWNER = 'finncshannon';
 const GITHUB_REPO = 'finance-app';
 
 async function checkForUpdates(): Promise<void> {
@@ -195,7 +202,7 @@ function loadWindowState(): WindowState {
 }
 
 function saveWindowState(): void {
-  if (!mainWindow) return;
+  if (!mainWindow || mainWindow.isDestroyed()) return;
 
   const state: WindowState = {
     isMaximized: mainWindow.isMaximized(),
@@ -291,15 +298,19 @@ function startBackend(): void {
 function waitForBackend(): Promise<void> {
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
+    let resolved = false;
 
     const poll = () => {
+      if (resolved) return;
       if (Date.now() - startTime > BACKEND_START_TIMEOUT_MS) {
         reject(new Error(`Backend failed to start within ${BACKEND_START_TIMEOUT_MS}ms`));
         return;
       }
 
       const req = http.get(HEALTH_URL, (res) => {
+        if (resolved) return;
         if (res.statusCode === 200) {
+          resolved = true;
           backendReady = true;
           console.log('[backend] Health check passed — backend ready');
           resolve();
@@ -309,12 +320,14 @@ function waitForBackend(): Promise<void> {
       });
 
       req.on('error', () => {
-        setTimeout(poll, HEALTH_POLL_INTERVAL_MS);
+        if (!resolved) setTimeout(poll, HEALTH_POLL_INTERVAL_MS);
       });
 
       req.setTimeout(500, () => {
-        req.destroy();
-        setTimeout(poll, HEALTH_POLL_INTERVAL_MS);
+        if (!resolved) {
+          req.destroy();
+          setTimeout(poll, HEALTH_POLL_INTERVAL_MS);
+        }
       });
     };
 
@@ -376,12 +389,21 @@ function createWindow(): void {
     mainWindow?.show();
   });
 
+  // Debug: log page load events
+  mainWindow.webContents.on('did-fail-load', (_e, code, desc, url) => {
+    console.error(`[window] Failed to load: ${url} (${code}: ${desc})`);
+  });
+
   mainWindow.on('resize', () => {
     notifyLayoutChange();
   });
 
   mainWindow.on('close', () => {
     saveWindowState();
+  });
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
   });
 }
 
@@ -436,6 +458,10 @@ app.whenReady().then(async () => {
     : path.join(process.resourcesPath, 'backend');
   console.log(`[startup] Data directory: ${dataDir}`);
 
+  // Load frontend first so boot sequence shows immediately
+  await loadApp();
+  console.log('[startup] Frontend loaded');
+
   // Start backend and wait for health check
   startBackend();
 
@@ -443,7 +469,6 @@ app.whenReady().then(async () => {
     await waitForBackend();
     console.log(`[startup] Backend ready (Python: ${pythonCheck.source}, v${pythonCheck.version})`);
     mainWindow?.webContents.send('backend-ready');
-    await loadApp();
     // Check for updates after app is loaded (non-blocking)
     checkForUpdates();
   } catch {

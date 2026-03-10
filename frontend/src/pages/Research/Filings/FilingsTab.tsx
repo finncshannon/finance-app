@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '../../../services/api';
 import { useResearchStore } from '../../../stores/researchStore';
+import { useSettingsStore } from '../../../stores/settingsStore';
 import { type FilingSummary, type FilingSection } from '../types';
 import { FilingList } from './FilingList';
 import { FilingSectionViewer } from './FilingSectionViewer';
@@ -14,6 +15,7 @@ interface FilingsTabProps {
 const FORM_FILTERS = ['all', '10-K', '10-Q', '8-K'] as const;
 
 export function FilingsTab({ ticker }: FilingsTabProps) {
+  const secEmail = useSettingsStore((s) => s.settings.sec_edgar_email);
   const { selectedFilingId, setSelectedFilingId, selectedSection, setSelectedSection, comparisonMode, setComparisonMode } = useResearchStore();
   const [filings, setFilings] = useState<FilingSummary[]>([]);
   const [sections, setSections] = useState<FilingSection[]>([]);
@@ -76,6 +78,19 @@ export function FilingsTab({ ticker }: FilingsTabProps) {
     const daysSince = (Date.now() - new Date(newest.filing_date).getTime()) / (1000 * 60 * 60 * 24);
     return daysSince > 90;
   })();
+
+  if (!secEmail?.trim()) {
+    return (
+      <div className={styles.empty ?? ''} style={{ flexDirection: 'column', gap: 8, padding: 24 }}>
+        <span style={{ color: 'var(--color-warning, #F59E0B)', fontWeight: 600, fontSize: 13 }}>
+          SEC EDGAR email required to fetch filings.
+        </span>
+        <span style={{ color: 'var(--text-tertiary)', fontSize: 12 }}>
+          Configure it in Settings → Data Sources.
+        </span>
+      </div>
+    );
+  }
 
   if (loading && filings.length === 0) {
     return <div className={styles.empty ?? ''}>Loading filings...</div>;

@@ -154,10 +154,12 @@ class MarketDataService:
                 logger.warning("day_change_pct appears to be percentage format (%.4f), normalizing to decimal", dcp)
                 dcp = dcp / 100
 
-            # Normalize dividend_yield — warn if suspiciously high (>50%)
+            # dividend_yield is normalized to decimal at the provider level
             div_yield = stats.dividend_yield
-            if div_yield is not None and div_yield > 0.5:
-                logger.warning("dividend_yield suspiciously high (%.4f) for %s — possible format issue", div_yield, ticker)
+            # Sanity check: cap at 100% — anything above that is data garbage
+            if div_yield is not None and div_yield > 1.0:
+                logger.warning("dividend_yield > 100%% (%.4f) for %s — setting to None", div_yield, ticker)
+                div_yield = None
 
             # Persist to cache
             cache_data = {

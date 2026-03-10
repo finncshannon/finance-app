@@ -40,7 +40,7 @@ interface TxPreviewData {
   skipped_count: number;
 }
 
-const MAPPING_FIELDS = [
+const POSITION_MAPPING_FIELDS = [
   { value: '', label: 'Skip' },
   { value: 'ticker', label: 'Ticker' },
   { value: 'shares', label: 'Shares' },
@@ -48,6 +48,17 @@ const MAPPING_FIELDS = [
   { value: 'date', label: 'Date Acquired' },
   { value: 'account', label: 'Account' },
   { value: 'name', label: 'Company Name' },
+];
+
+const TX_MAPPING_FIELDS = [
+  { value: '', label: 'Skip' },
+  { value: 'ticker', label: 'Ticker / Symbol' },
+  { value: 'date', label: 'Date' },
+  { value: 'type', label: 'Action (Buy/Sell)' },
+  { value: 'shares', label: 'Shares / Quantity' },
+  { value: 'price', label: 'Price' },
+  { value: 'fees', label: 'Fees / Commission' },
+  { value: 'account', label: 'Account' },
 ];
 
 export function ImportModal({ onClose, onSuccess, defaultImportType }: Props) {
@@ -140,16 +151,18 @@ export function ImportModal({ onClose, onSuccess, defaultImportType }: Props) {
 
     // Build a remapped CSV with standard column names
     const reverseMap: Record<string, string> = {};
+    const txStandardNames: Record<string, string> = {
+      ticker: 'Symbol', date: 'Date', type: 'Action',
+      shares: 'Quantity', price: 'Price', fees: 'Commission', account: 'Account',
+    };
+    const posStandardNames: Record<string, string> = {
+      ticker: 'Symbol', shares: 'Quantity', cost_basis: 'Cost Basis',
+      date: 'Date Acquired', account: 'Account', name: 'Description',
+    };
+    const nameMap = importType === 'transactions' ? txStandardNames : posStandardNames;
     for (const [csvCol, internalField] of Object.entries(columnMap)) {
       if (internalField) {
-        const standardName = internalField === 'ticker' ? 'Symbol'
-          : internalField === 'shares' ? 'Quantity'
-          : internalField === 'cost_basis' ? 'Cost Basis'
-          : internalField === 'date' ? 'Date Acquired'
-          : internalField === 'account' ? 'Account'
-          : internalField === 'name' ? 'Description'
-          : csvCol;
-        reverseMap[csvCol] = standardName;
+        reverseMap[csvCol] = nameMap[internalField] ?? csvCol;
       }
     }
 
@@ -331,7 +344,7 @@ export function ImportModal({ onClose, onSuccess, defaultImportType }: Props) {
                           setColumnMap({ ...columnMap, [header]: e.target.value })
                         }
                       >
-                        {MAPPING_FIELDS.map((f) => (
+                        {(importType === 'transactions' ? TX_MAPPING_FIELDS : POSITION_MAPPING_FIELDS).map((f) => (
                           <option key={f.value} value={f.value}>{f.label}</option>
                         ))}
                       </select>
@@ -356,6 +369,7 @@ export function ImportModal({ onClose, onSuccess, defaultImportType }: Props) {
             <table className={styles.previewTable}>
               <thead>
                 <tr>
+                  <th className={styles.previewThRemove} />
                   <th className={styles.previewTh}>Ticker</th>
                   <th className={styles.previewThRight}>Shares</th>
                   <th className={styles.previewThRight}>Cost/Share</th>
@@ -366,6 +380,16 @@ export function ImportModal({ onClose, onSuccess, defaultImportType }: Props) {
               <tbody>
                 {preview.positions.map((p, i) => (
                   <tr key={i}>
+                    <td className={styles.previewTdRemove}>
+                      <button
+                        className={styles.removeRowBtn}
+                        onClick={() => setPreview({
+                          ...preview,
+                          positions: preview.positions.filter((_, j) => j !== i),
+                        })}
+                        title="Remove from import"
+                      >&times;</button>
+                    </td>
                     <td className={styles.previewTdTicker}>{p.ticker}</td>
                     <td className={styles.previewTdRight}>{fmtShares(p.shares)}</td>
                     <td className={styles.previewTdRight}>
@@ -393,6 +417,7 @@ export function ImportModal({ onClose, onSuccess, defaultImportType }: Props) {
             <table className={styles.previewTable}>
               <thead>
                 <tr>
+                  <th className={styles.previewThRemove} />
                   <th className={styles.previewTh}>Date</th>
                   <th className={styles.previewTh}>Type</th>
                   <th className={styles.previewTh}>Ticker</th>
@@ -404,6 +429,16 @@ export function ImportModal({ onClose, onSuccess, defaultImportType }: Props) {
               <tbody>
                 {txPreview.transactions.map((tx, i) => (
                   <tr key={i}>
+                    <td className={styles.previewTdRemove}>
+                      <button
+                        className={styles.removeRowBtn}
+                        onClick={() => setTxPreview({
+                          ...txPreview,
+                          transactions: txPreview.transactions.filter((_, j) => j !== i),
+                        })}
+                        title="Remove from import"
+                      >&times;</button>
+                    </td>
                     <td className={styles.previewTd}>{tx.date || '—'}</td>
                     <td className={styles.previewTd}>
                       <span className={

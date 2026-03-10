@@ -5,6 +5,7 @@ import logging
 from fastapi import APIRouter, Query, Request
 
 from models.response import success_response, error_response
+from providers.sec_edgar import SECEdgarEmailNotConfigured
 
 logger = logging.getLogger("finance_app")
 
@@ -43,6 +44,11 @@ async def get_filings(
         form_types = form_type if form_type else None
         filings = await _svc(request).get_filings(ticker, form_types, limit)
         return success_response(data={"filings": filings})
+    except SECEdgarEmailNotConfigured:
+        return error_response(
+            "SEC_EMAIL_REQUIRED",
+            "SEC EDGAR email required. Set it in Settings → Data Sources.",
+        )
     except Exception as exc:
         return error_response("FILINGS_ERROR", str(exc))
 
@@ -54,6 +60,11 @@ async def fetch_filings(ticker: str, request: Request):
         svc = _svc(request)
         result = await svc.fetch_filings(ticker)
         return success_response(data=result)
+    except SECEdgarEmailNotConfigured:
+        return error_response(
+            "SEC_EMAIL_REQUIRED",
+            "SEC EDGAR email required. Set it in Settings → Data Sources.",
+        )
     except Exception as exc:
         logger.exception("Filing fetch failed for %s", ticker)
         return error_response("FETCH_ERROR", str(exc))
@@ -64,6 +75,11 @@ async def get_filing_sections(ticker: str, filing_id: int, request: Request):
     try:
         sections = await _svc(request).get_filing_sections(filing_id)
         return success_response(data={"sections": sections})
+    except SECEdgarEmailNotConfigured:
+        return error_response(
+            "SEC_EMAIL_REQUIRED",
+            "SEC EDGAR email required. Set it in Settings → Data Sources.",
+        )
     except Exception as exc:
         return error_response("FILING_ERROR", str(exc))
 

@@ -9,6 +9,7 @@ interface CompanyInfoCardProps {
   x: number;
   y: number;
   onClose: () => void;
+  onMouseEnterCard: () => void;
 }
 
 interface QuickInfo {
@@ -17,15 +18,15 @@ interface QuickInfo {
   sector?: string;
   industry?: string;
   current_price?: number;
+  day_change_pct?: number;
   market_cap?: number;
   pe_trailing?: number;
   ev_to_ebitda?: number;
-  revenue_growth?: number;
-  operating_margin?: number;
   dividend_yield?: number;
   beta?: number;
   fifty_two_week_low?: number;
   fifty_two_week_high?: number;
+  year_change_pct?: number;
 }
 
 function fmtMarketCap(n: number | null | undefined): string {
@@ -41,44 +42,52 @@ function fmtRatio(n: number | null | undefined): string {
   return n.toFixed(1) + 'x';
 }
 
-export function CompanyInfoCard({ ticker, x, y, onClose }: CompanyInfoCardProps) {
+export function CompanyInfoCard({ ticker, x, y, onClose, onMouseEnterCard }: CompanyInfoCardProps) {
   const [info, setInfo] = useState<QuickInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const cardRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ x, y });
-  const isHovering = useRef(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
 
-    // Try quote endpoint for quick data
-    api.get<Record<string, unknown>>(`/api/v1/market-data/quote/${ticker}`)
-      .then((data) => {
-        if (cancelled) return;
-        setInfo({
-          ticker,
-          company_name: data.company_name as string | undefined,
-          sector: data.sector as string | undefined,
-          industry: data.industry as string | undefined,
-          current_price: data.current_price as number | undefined,
-          market_cap: data.market_cap as number | undefined,
-          pe_trailing: data.pe_trailing as number | undefined,
-          ev_to_ebitda: data.ev_to_ebitda as number | undefined,
-          revenue_growth: data.revenue_growth as number | undefined,
-          operating_margin: data.operating_margin as number | undefined,
-          dividend_yield: data.dividend_yield as number | undefined,
-          beta: data.beta as number | undefined,
-          fifty_two_week_low: data.fifty_two_week_low as number | undefined,
-          fifty_two_week_high: data.fifty_two_week_high as number | undefined,
-        });
-      })
-      .catch(() => {
-        if (!cancelled) setInfo({ ticker });
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+    // Fetch company info, quote, and 1Y historical in parallel
+    const companyP = api.get<Record<string, unknown>>(`/api/v1/companies/${ticker}`).catch(() => null);
+    const quoteP = api.get<Record<string, unknown>>(`/api/v1/companies/${ticker}/quote`).catch(() => null);
+    const histP = api.get<Record<string, unknown>[]>(`/api/v1/companies/${ticker}/historical?period=1y&interval=1d`).catch(() => null);
+
+    Promise.all([companyP, quoteP, histP]).then(([company, quote, hist]) => {
+      if (cancelled) return;
+      const curPrice = quote?.current_price as number | undefined;
+      // Compute 1Y change from historical bars (last close vs first close)
+      let yearChangePct: number | undefined;
+      if (Array.isArray(hist) && hist.length > 1) {
+        const firstClose = hist[0]?.close as number | undefined;
+        const lastClose = hist[hist.length - 1]?.close as number | undefined;
+        if (firstClose != null && firstClose > 0 && lastClose != null) {
+          yearChangePct = (lastClose - firstClose) / firstClose;
+        }
+      }
+      setInfo({
+        ticker,
+        company_name: (company?.company_name ?? quote?.company_name) as string | undefined,
+        sector: company?.sector as string | undefined,
+        industry: company?.industry as string | undefined,
+        current_price: curPrice,
+        day_change_pct: quote?.day_change_pct as number | undefined,
+        market_cap: quote?.market_cap as number | undefined,
+        pe_trailing: quote?.pe_trailing as number | undefined,
+        ev_to_ebitda: quote?.ev_to_ebitda as number | undefined,
+        dividend_yield: quote?.dividend_yield as number | undefined,
+        beta: quote?.beta as number | undefined,
+        fifty_two_week_low: quote?.fifty_two_week_low as number | undefined,
+        fifty_two_week_high: quote?.fifty_two_week_high as number | undefined,
+        year_change_pct: yearChangePct,
       });
+      setLoading(false);
+    });
 
     return () => { cancelled = true; };
   }, [ticker]);
@@ -99,20 +108,26 @@ export function CompanyInfoCard({ ticker, x, y, onClose }: CompanyInfoCardProps)
   }, [x, y, loading]);
 
   const handleMouseEnter = () => {
-    isHovering.current = true;
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    onMouseEnterCard();
   };
 
   const handleMouseLeave = () => {
-    isHovering.current = false;
-    setTimeout(() => {
-      if (!isHovering.current) onClose();
-    }, 200);
+    closeTimer.current = setTimeout(() => onClose(), 250);
   };
 
   const handleOpenResearch = () => {
     navigationService.goToResearch(ticker);
     onClose();
   };
+
+  const priceColor = info?.day_change_pct != null
+    ? info.day_change_pct >= 0 ? 'var(--color-positive)' : 'var(--color-negative)'
+    : undefined;
+
+  const yearColor = info?.year_change_pct != null
+    ? info.year_change_pct >= 0 ? 'var(--color-positive)' : 'var(--color-negative)'
+    : undefined;
 
   return (
     <div
@@ -139,6 +154,17 @@ export function CompanyInfoCard({ ticker, x, y, onClose }: CompanyInfoCardProps)
             </div>
           )}
 
+          {info.current_price != null && (
+            <div className={styles.priceRow}>
+              <span className={styles.price}>{fmtDollar(info.current_price)}</span>
+              {info.day_change_pct != null && (
+                <span style={{ color: priceColor, fontSize: 12 }}>
+                  {info.day_change_pct >= 0 ? '+' : ''}{(info.day_change_pct * 100).toFixed(2)}%
+                </span>
+              )}
+            </div>
+          )}
+
           <div className={styles.grid}>
             <div className={styles.metric}>
               <span className={styles.metricLabel}>Mkt Cap</span>
@@ -153,16 +179,16 @@ export function CompanyInfoCard({ ticker, x, y, onClose }: CompanyInfoCardProps)
               <span className={styles.metricValue}>{fmtRatio(info.ev_to_ebitda)}</span>
             </div>
             <div className={styles.metric}>
-              <span className={styles.metricLabel}>Rev Growth</span>
-              <span className={styles.metricValue}>{fmtPct(info.revenue_growth)}</span>
-            </div>
-            <div className={styles.metric}>
-              <span className={styles.metricLabel}>Op Margin</span>
-              <span className={styles.metricValue}>{fmtPct(info.operating_margin)}</span>
-            </div>
-            <div className={styles.metric}>
               <span className={styles.metricLabel}>Div Yield</span>
               <span className={styles.metricValue}>{fmtPct(info.dividend_yield)}</span>
+            </div>
+            <div className={styles.metric}>
+              <span className={styles.metricLabel}>1Y Change</span>
+              <span className={styles.metricValue} style={{ color: yearColor }}>
+                {info.year_change_pct != null
+                  ? `${info.year_change_pct >= 0 ? '+' : ''}${(info.year_change_pct * 100).toFixed(2)}%`
+                  : '—'}
+              </span>
             </div>
             <div className={styles.metric}>
               <span className={styles.metricLabel}>Beta</span>
@@ -170,14 +196,15 @@ export function CompanyInfoCard({ ticker, x, y, onClose }: CompanyInfoCardProps)
                 {info.beta != null ? info.beta.toFixed(2) : '—'}
               </span>
             </div>
-            <div className={styles.metric}>
-              <span className={styles.metricLabel}>52W Range</span>
-              <span className={styles.metricValue}>
-                {info.fifty_two_week_low != null && info.fifty_two_week_high != null
-                  ? `${fmtDollar(info.fifty_two_week_low)} – ${fmtDollar(info.fifty_two_week_high)}`
-                  : '—'}
-              </span>
-            </div>
+          </div>
+
+          <div className={styles.metricWide}>
+            <span className={styles.metricLabel}>52W Range</span>
+            <span className={styles.metricValue}>
+              {info.fifty_two_week_low != null && info.fifty_two_week_high != null
+                ? `${fmtDollar(info.fifty_two_week_low)} – ${fmtDollar(info.fifty_two_week_high)}`
+                : '—'}
+            </span>
           </div>
 
           <button className={styles.researchLink} onClick={handleOpenResearch}>

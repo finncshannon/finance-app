@@ -97,12 +97,25 @@ class CompanyRepo:
         return await self.db.fetchall("SELECT * FROM companies ORDER BY ticker")
 
     async def search(self, query: str) -> list[dict]:
-        pattern = f"%{query}%"
+        q = query.upper()
+        prefix = f"{q}%"
+        contains = f"%{q}%"
+        # Prioritize: exact ticker, ticker prefix, name prefix, name contains
         return await self.db.fetchall(
-            """SELECT * FROM companies
+            """SELECT ticker, company_name, exchange
+               FROM companies
                WHERE ticker LIKE ? OR company_name LIKE ?
-               ORDER BY ticker LIMIT 50""",
-            (pattern, pattern),
+               ORDER BY
+                 CASE
+                   WHEN UPPER(ticker) = ? THEN 0
+                   WHEN ticker LIKE ? THEN 1
+                   WHEN company_name LIKE ? THEN 2
+                   ELSE 3
+                 END,
+                 LENGTH(ticker),
+                 ticker
+               LIMIT 20""",
+            (contains, contains, q, prefix, prefix),
         )
 
     async def find_peers(

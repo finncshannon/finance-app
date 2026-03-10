@@ -44,4 +44,6 @@
   right: 0;
   height: 2px;
   background: var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3),
+              0 0px 4px rgba(59, 130, 246, 0.2);
 }

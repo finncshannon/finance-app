@@ -75,6 +75,7 @@ export function HoldingsTable({ positions, expandedId, onExpand, onRecordTx, onR
   const [editingPosition, setEditingPosition] = useState<Position | null>(null);
   const [hoverCard, setHoverCard] = useState<{ ticker: string; x: number; y: number } | null>(null);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const hoverCloseRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const ctxMenuRef = useRef<HTMLDivElement>(null);
   const [ctxMenuAdjusted, setCtxMenuAdjusted] = useState<{ x: number; y: number } | null>(null);
 
@@ -177,6 +178,7 @@ export function HoldingsTable({ positions, expandedId, onExpand, onRecordTx, onR
 
   // Hover card handlers
   const handleTickerMouseEnter = (ticker: string, e: React.MouseEvent) => {
+    clearTimeout(hoverCloseRef.current);
     const rect = (e.target as HTMLElement).getBoundingClientRect();
     hoverTimerRef.current = setTimeout(() => {
       setHoverCard({ ticker, x: rect.right + 8, y: rect.top });
@@ -185,9 +187,13 @@ export function HoldingsTable({ positions, expandedId, onExpand, onRecordTx, onR
 
   const handleTickerMouseLeave = () => {
     clearTimeout(hoverTimerRef.current);
-    setTimeout(() => {
+    hoverCloseRef.current = setTimeout(() => {
       setHoverCard(null);
-    }, 200);
+    }, 300);
+  };
+
+  const handleCardMouseEnter = () => {
+    clearTimeout(hoverCloseRef.current);
   };
 
   // Arrow indicator
@@ -460,6 +466,7 @@ export function HoldingsTable({ positions, expandedId, onExpand, onRecordTx, onR
           x={hoverCard.x}
           y={hoverCard.y}
           onClose={() => setHoverCard(null)}
+          onMouseEnterCard={handleCardMouseEnter}
         />
       )}
 

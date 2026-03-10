@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import sys
 import uuid
 
 from contextlib import asynccontextmanager
@@ -11,6 +12,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from db.connection import db
 from db.init_user_db import init_user_db
 from db.init_cache_db import init_cache_db
+
+# Configure finance_app logger so log output is visible via Electron's stdout/stderr
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+    stream=sys.stderr,
+)
+logging.getLogger("finance_app").setLevel(logging.INFO)
 from routers import (
     companies_router,
     dashboard_router,
@@ -59,7 +68,7 @@ async def lifespan(app: FastAPI):
     from providers.sec_edgar import SECEdgarProvider
     from services.xbrl_service import XBRLService
 
-    sec_provider = SECEdgarProvider()
+    sec_provider = SECEdgarProvider(settings_service=settings_svc)
     xbrl_svc = XBRLService(db, sec_provider)
     app.state.sec_provider = sec_provider
     app.state.xbrl_service = xbrl_svc
@@ -196,6 +205,14 @@ async def lifespan(app: FastAPI):
     app.state.universe_service = universe_svc
     logger.info("Universe service initialized.")
 
+    # Pre-load curated universes (DOW, S&P 500, Russell 3000) synchronously
+    # so they're available before the frontend connects.
+    try:
+        curated_results = await universe_svc.load_all_curated()
+        logger.info("Curated universes pre-loaded: %s", curated_results)
+    except Exception as exc:
+        logger.error("Failed to pre-load curated universes: %s", exc)
+
     # Initialize universe hydration service
     from services.universe_hydration_service import UniverseHydrationService
 
@@ -304,11 +321,11 @@ async def lifespan(app: FastAPI):
 
     startup_refresh_task = asyncio.create_task(_startup_price_refresh())
 
-    # Start background hydration (load curated universes, then fetch data)
+    # Start background hydration (fetch market data for universe tickers)
+    # Note: curated universes are already loaded above during startup.
     async def _startup_hydration():
         try:
-            await universe_svc.load_all_curated()
-            logger.info("Curated universes loaded, starting hydration...")
+            logger.info("Starting background hydration...")
             await hydration_svc.run_hydration()
         except asyncio.CancelledError:
             raise

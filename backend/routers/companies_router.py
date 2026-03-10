@@ -10,6 +10,7 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 
 from models.response import success_response, error_response
+from providers.sec_edgar import SECEdgarEmailNotConfigured
 
 router = APIRouter(prefix="/api/v1/companies", tags=["companies"])
 
@@ -115,14 +116,20 @@ async def get_metrics(request: Request, ticker: str):
 @router.get("/{ticker}/filings")
 async def get_filings(request: Request, ticker: str, form_type: str = "10-K", limit: int = 10):
     """Get SEC filing index for a company."""
-    t0 = time.monotonic()
-    sec = request.app.state.sec_provider
-    entries = await sec.get_filing_index(ticker, [form_type], limit=limit)
-    ms = int((time.monotonic() - t0) * 1000)
-    return success_response(
-        data=[e.model_dump() for e in entries],
-        duration_ms=ms,
-    )
+    try:
+        t0 = time.monotonic()
+        sec = request.app.state.sec_provider
+        entries = await sec.get_filing_index(ticker, [form_type], limit=limit)
+        ms = int((time.monotonic() - t0) * 1000)
+        return success_response(
+            data=[e.model_dump() for e in entries],
+            duration_ms=ms,
+        )
+    except SECEdgarEmailNotConfigured:
+        return error_response(
+            "SEC_EMAIL_REQUIRED",
+            "SEC EDGAR email required. Set it in Settings → Data Sources.",
+        )
 
 
 # --- Events ---

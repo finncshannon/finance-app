@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSettingsStore } from '../../../stores/settingsStore';
 import { Select } from '../../../components/ui/Input/Select';
 import { Input } from '../../../components/ui/Input/Input';
@@ -26,9 +27,25 @@ const BACKUP_RETENTION_OPTIONS = [
   { value: '90', label: '90 days' },
 ];
 
+function isValidEmail(email: string): boolean {
+  const trimmed = email.trim();
+  if (!trimmed) return true; // empty is "valid" (just not set)
+  return trimmed.includes('@') && trimmed.includes('.');
+}
+
 export function DataSourcesSection() {
   const settings = useSettingsStore((s) => s.settings);
   const setSetting = useSettingsStore((s) => s.set);
+  const [emailError, setEmailError] = useState('');
+
+  const handleEmailChange = (val: string) => {
+    setSetting('sec_edgar_email', val);
+    if (val.trim() && !isValidEmail(val)) {
+      setEmailError('Enter a valid email address (must contain @ and .)');
+    } else {
+      setEmailError('');
+    }
+  };
 
   return (
     <div className={styles.sectionGroup}>
@@ -60,12 +77,22 @@ export function DataSourcesSection() {
           Email is required by SEC EDGAR for API access. Filings are cached locally.
         </p>
         <div className={styles.fieldGroup}>
-          <Input
-            label="EDGAR Contact Email"
-            value={settings.sec_edgar_email ?? ''}
-            onChange={(val) => setSetting('sec_edgar_email', val)}
-            placeholder="you@example.com"
-          />
+          <div>
+            <Input
+              label="EDGAR Contact Email"
+              value={settings.sec_edgar_email ?? ''}
+              onChange={handleEmailChange}
+              placeholder="you@example.com"
+            />
+            {emailError && (
+              <p style={{ color: 'var(--color-negative)', fontSize: 11, margin: '4px 0 0' }}>
+                {emailError}
+              </p>
+            )}
+            <p style={{ color: 'var(--text-tertiary)', fontSize: 11, margin: '4px 0 0', lineHeight: 1.4 }}>
+              Required by SEC.gov for EDGAR API access. Your email is sent as identification in request headers.
+            </p>
+          </div>
           <Checkbox
             label="Auto-fetch filings for tracked tickers"
             checked={settings.auto_fetch_filings === 'true'}

@@ -23,6 +23,7 @@ extraResources:
     to: backend
     filter:
       - "**/*.py"
+      - "**/*.json"
       - "requirements.txt"
       - "!__pycache__"
       - "!**/__pycache__"
@@ -33,7 +34,7 @@ extraResources:
 
 publish:
   provider: github
-  owner: your-username
+  owner: finncshannon
   repo: finance-app
   releaseType: release
 

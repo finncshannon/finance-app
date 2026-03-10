@@ -67,7 +67,7 @@ COLUMN_ALIASES = {
 
 TX_ALIASES = {
     "ticker": ["symbol", "ticker", "stock symbol", "stock", "instrument"],
-    "date": ["date", "trade date", "transaction date", "settlement date"],
+    "date": ["date", "run date", "trade date", "transaction date", "settlement date"],
     "type": ["action", "type", "transaction type", "trans type", "activity"],
     "shares": ["quantity", "qty", "shares", "amount"],
     "price": ["price", "price per share", "execution price", "avg price", "fill price"],
@@ -100,28 +100,79 @@ def _parse_float(val: str | None) -> float | None:
         return None
 
 
+def _normalize_header(h: str) -> str:
+    """Normalize a CSV header for matching: lowercase, strip whitespace and unit suffixes like ($)."""
+    h = h.strip().lower()
+    # Strip trailing unit indicators: ($), (%), (#), etc.
+    h = re.sub(r'\s*\([^)]*\)\s*$', '', h).strip()
+    return h
+
+
 def _match_columns(headers: list[str], aliases: dict[str, list[str]]) -> dict[str, str | None]:
     """Map logical field names to actual CSV column names via case-insensitive alias matching."""
+    # Build two lookup dicts: exact stripped header and unit-suffix-stripped header
     normalized = {h.strip().lower(): h for h in headers}
+    stripped = {_normalize_header(h): h for h in headers}
     result: dict[str, str | None] = {}
     for field_name, candidates in aliases.items():
         matched = None
         for candidate in candidates:
-            if candidate.lower() in normalized:
-                matched = normalized[candidate.lower()]
+            key = candidate.lower()
+            if key in normalized:
+                matched = normalized[key]
+                break
+            if key in stripped:
+                matched = stripped[key]
                 break
         result[field_name] = matched
     return result
 
 
+def _clean_csv_content(content: str) -> str:
+    """Strip BOM, leading blank lines, and trailing disclaimer/footer text from CSV content."""
+    # Strip BOM if present
+    content = content.lstrip('\ufeff')
+    lines = content.splitlines()
+
+    # Skip leading blank lines to find the header
+    start = 0
+    for i, line in enumerate(lines):
+        if line.strip():
+            start = i
+            break
+
+    # Trim trailing disclaimers: look for a stretch of blank lines followed by
+    # quoted text that doesn't look like CSV data.  Walk backwards from the end.
+    end = len(lines)
+    for i in range(len(lines) - 1, start, -1):
+        stripped = lines[i].strip()
+        if not stripped:
+            end = i
+            continue
+        # Disclaimer lines typically start with a quote and have no commas
+        # separating distinct CSV fields.  A valid data line has the same number
+        # of commas as the header.
+        if stripped.startswith('"') and stripped.count(',') <= 1:
+            end = i
+            continue
+        break
+
+    return "\n".join(lines[start:end])
+
+
 def _infer_transaction_type(raw: str) -> str | None:
     """Map various broker action strings to BUY/SELL/DIVIDEND."""
     val = raw.strip().upper()
-    if val in ("BUY", "BOUGHT", "PURCHASE") or "BUY" in val or "BOUGHT" in val:
+    if not val:
+        return None
+    # Buy patterns: "BUY", "BOUGHT", "YOU BOUGHT", "PURCHASE", "REINVEST"
+    if "BOUGHT" in val or "BUY" in val or "PURCHASE" in val or "REINVEST" in val:
         return "BUY"
-    if val in ("SELL", "SOLD") or "SELL" in val or "SOLD" in val:
+    # Sell patterns: "SELL", "SOLD", "YOU SOLD"
+    if "SOLD" in val or "SELL" in val:
         return "SELL"
-    if "DIVIDEND" in val or val == "DIV":
+    # Dividend patterns
+    if "DIVIDEND" in val or val == "DIV" or "DISTRIBUTION" in val:
         return "DIVIDEND"
     return None
 
@@ -135,6 +186,7 @@ _FIDELITY_EXPECTED = {"account name/number", "symbol", "description", "quantity"
 
 def _parse_fidelity(content: str) -> ParseResult:
     """Parse Fidelity position CSV."""
+    content = _clean_csv_content(content)
     reader = csv.DictReader(io.StringIO(content))
     if not reader.fieldnames:
         return ParseResult(success=False, errors=["Could not parse CSV headers"])
@@ -206,6 +258,7 @@ _SCHWAB_EXPECTED = {"symbol", "description", "quantity"}
 
 def _parse_schwab(content: str) -> ParseResult:
     """Parse Schwab position CSV."""
+    content = _clean_csv_content(content)
     reader = csv.DictReader(io.StringIO(content))
     if not reader.fieldnames:
         return ParseResult(success=False, errors=["Could not parse CSV headers"])
@@ -367,6 +420,7 @@ def _parse_ibkr(content: str) -> ParseResult:
 
 def _parse_generic(content: str) -> ParseResult:
     """Parse CSV with auto-detected column mapping."""
+    content = _clean_csv_content(content)
     reader = csv.DictReader(io.StringIO(content))
     if not reader.fieldnames:
         return ParseResult(success=False, errors=["Could not parse CSV headers"])
@@ -374,15 +428,19 @@ def _parse_generic(content: str) -> ParseResult:
     col_map = _match_columns(reader.fieldnames, COLUMN_ALIASES)
 
     if not col_map.get("ticker"):
-        unmatched = [h for h in reader.fieldnames if h.strip()]
+        found_cols = [h for h in reader.fieldnames if h.strip()]
+        matched = {k: v for k, v in col_map.items() if v}
+        unmatched_fields = [k for k, v in col_map.items() if not v]
+        msg_parts = [f"Could not auto-detect a ticker/symbol column."]
+        msg_parts.append(f"Your CSV columns: {', '.join(found_cols)}.")
+        if matched:
+            matched_str = ", ".join(f'{k} -> "{v}"' for k, v in matched.items())
+            msg_parts.append(f"Matched: {matched_str}.")
+        msg_parts.append(f"Could not match: {', '.join(unmatched_fields)}.")
+        msg_parts.append("Use the column mapping below or try a specific broker format.")
         return ParseResult(
             success=False,
-            errors=[
-                f"Could not auto-detect a ticker/symbol column. "
-                f"Found columns: {', '.join(unmatched)}. "
-                f"Try selecting a specific broker format or ensure your CSV has a "
-                f"'Symbol' or 'Ticker' column."
-            ],
+            errors=[" ".join(msg_parts)],
         )
 
     positions: list[ParsedPosition] = []
@@ -429,6 +487,7 @@ def _parse_generic(content: str) -> ParseResult:
 
 def _parse_transactions(content: str, broker: str) -> ParseResult:
     """Parse a transaction CSV into ParsedTransaction records."""
+    content = _clean_csv_content(content)
     reader = csv.DictReader(io.StringIO(content))
     if not reader.fieldnames:
         return ParseResult(success=False, errors=["Could not parse CSV headers"])
@@ -436,13 +495,19 @@ def _parse_transactions(content: str, broker: str) -> ParseResult:
     col_map = _match_columns(reader.fieldnames, TX_ALIASES)
 
     if not col_map.get("ticker"):
-        unmatched = [h for h in reader.fieldnames if h.strip()]
+        found_cols = [h for h in reader.fieldnames if h.strip()]
+        matched = {k: v for k, v in col_map.items() if v}
+        unmatched = [k for k, v in col_map.items() if not v]
+        msg_parts = [f"Could not find a ticker/symbol column for transactions."]
+        msg_parts.append(f"Your CSV columns: {', '.join(found_cols)}.")
+        if matched:
+            matched_str = ", ".join(f'{k} -> "{v}"' for k, v in matched.items())
+            msg_parts.append(f"Matched: {matched_str}.")
+        msg_parts.append(f"Could not match: {', '.join(unmatched)}.")
+        msg_parts.append("Use the column mapping below to assign them manually.")
         return ParseResult(
             success=False,
-            errors=[
-                f"Could not find a ticker/symbol column for transactions. "
-                f"Found columns: {', '.join(unmatched)}."
-            ],
+            errors=[" ".join(msg_parts)],
         )
 
     transactions: list[ParsedTransaction] = []

@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "private": true,
   "author": "Finn",
-  "description": "Electron main process for Finance App",
+  "description": "Electron main process for Spectre",
   "main": "dist/main.js",
   "scripts": {
     "dev": "tsc && electron dist/main.js",

@@ -1,133 +1,130 @@
-/* BootSequence — eDEX-UI inspired startup animation */
+/* BootSequence — Holographic HUD Boot */
 
+/* ── Overlay ── */
 .overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
   background: var(--bg-primary, #0D0D0D);
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 48px 56px;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
 }
 
-/* ── Phase transitions ── */
-
-.phaseBlack {
-  opacity: 1;
-}
-
-.phaseTerminal {
-  opacity: 1;
-}
-
-.phaseShift {
-  opacity: 1;
-}
-
-.phaseFadeOut {
+.overlayDissolve {
   opacity: 0;
-  transition: opacity 600ms ease-out;
+  transition: opacity 1.8s ease-out;
 }
 
-/* ── Terminal block ── */
+/* ── Background Grid ── */
+.hudGrid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--hud-grid-color, rgba(59,130,246,0.04)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hud-grid-color, rgba(59,130,246,0.04)) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0;
+  animation: gridFadeIn 1.5s ease-out forwards;
+}
 
-.terminal {
+@keyframes gridFadeIn {
+  to { opacity: 1; }
+}
+
+/* ── HUD Frame ── */
+.hudFrame {
+  position: relative;
+  width: 480px;
+  max-width: 85vw;
+  padding: 40px 48px;
+  border: 1px solid transparent;
+  opacity: 0;
+}
+
+.hudFrameVisible {
+  opacity: 1;
+  border-color: var(--hud-cyan-dim, rgba(59,130,246,0.3));
+  animation: frameDraw 1.2s ease-out forwards;
+}
+
+@keyframes frameDraw {
+  0% {
+    clip-path: inset(50% 50% 50% 50%);
+    opacity: 0;
+  }
+  30% {
+    clip-path: inset(49.5% 0% 49.5% 0%);
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0% 0% 0% 0%);
+    opacity: 1;
+  }
+}
+
+.hudFrameDissolve {
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+  border-color: transparent;
+}
+
+/* Corner brackets */
+.hudFrame::before,
+.hudFrame::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: var(--hud-cyan, #3B82F6);
+  border-style: solid;
+  opacity: 0;
+}
+
+.hudFrame::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+}
+
+.hudFrame::after {
+  top: -1px;
+  right: -1px;
+  border-width: 2px 2px 0 0;
+}
+
+.hudFrameVisible::before,
+.hudFrameVisible::after {
+  animation: cornerFlash 0.6s ease-out 1s forwards;
+}
+
+@keyframes cornerFlash {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* ── Title Area ── */
+.hudTitleArea {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.hudTitle {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--text-tertiary, #737373);
-  white-space: pre;
-  transition: opacity 400ms ease-out, transform 400ms ease-out;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 8px;
+  color: var(--hud-cyan, #3B82F6);
+  text-shadow: 0 0 20px var(--glow-color-boot, rgba(59,130,246,0.4)),
+               0 0 40px rgba(59,130,246,0.15);
 }
 
-.terminalShifted {
-  opacity: 0.3;
-  transform: translateY(-24px);
-}
-
-/* ── Individual boot line ── */
-
-.bootLine {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  opacity: 0;
-  transform: translateY(4px);
-}
-
-.bootLineVisible {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 120ms ease-out, transform 120ms ease-out;
-}
-
-.linePrefix {
-  color: var(--text-tertiary, #737373);
-  flex-shrink: 0;
-}
-
-.lineLabel {
-  color: var(--text-tertiary, #737373);
-  flex-shrink: 0;
-}
-
-.checkmark {
-  color: var(--accent-primary, #3B82F6);
-  opacity: 0;
-  transform: scale(0.7);
-  transition: opacity 150ms ease-out, transform 150ms ease-out;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-.checkmarkVisible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* ── Header lines (title + divider) ── */
-
-.headerLine {
-  opacity: 0;
-  transform: translateY(4px);
-}
-
-.headerLineVisible {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 120ms ease-out, transform 120ms ease-out;
-}
-
-.title {
-  color: var(--text-tertiary, #737373);
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.divider {
-  color: var(--text-tertiary, #737373);
-  opacity: 0.5;
-}
-
-.statusLine {
-  color: var(--text-tertiary, #737373);
-  opacity: 0;
-  transform: translateY(4px);
-}
-
-.statusLineVisible {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 120ms ease-out, transform 120ms ease-out;
-}
-
-/* ── Blinking cursor ── */
-
-.cursor {
-  animation: cursorBlink 1s step-end infinite;
-  margin-left: 2px;
+.hudCursor {
+  animation: cursorBlink 0.8s step-end infinite;
+  color: var(--hud-cyan, #3B82F6);
 }
 
 @keyframes cursorBlink {
@@ -135,18 +132,86 @@
   50% { opacity: 0; }
 }
 
-/* ── Completion line ── */
-
-.completionLine {
-  color: var(--accent-primary, #3B82F6);
+.hudVersion {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 11px;
+  color: var(--text-tertiary, #737373);
+  letter-spacing: 2px;
+  margin-top: 8px;
   opacity: 0;
   transform: translateY(4px);
-  margin-top: 8px;
-  font-weight: 600;
 }
 
-.completionLineVisible {
+.hudVersionVisible {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 200ms ease-out, transform 200ms ease-out;
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+
+/* ── System Checks ── */
+.hudChecks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hudCheckLine {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  color: var(--text-tertiary, #737373);
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.hudCheckLineVisible {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 250ms ease-out, transform 250ms ease-out;
+}
+
+.hudBracket {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--hud-cyan-dim, rgba(59,130,246,0.3));
+  border-radius: 2px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.hudCheckEmpty {
+  display: inline-block;
+  width: 10px;
+}
+
+.hudCheckmark {
+  color: var(--color-positive, #22C55E);
+  text-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+  animation: checkPulse 0.3s ease-out;
+}
+
+@keyframes checkPulse {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.hudCheckLabel {
+  flex: 1;
+}
+
+.hudStatusComplete {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hud-cyan, #3B82F6);
+  text-shadow: 0 0 8px var(--glow-color-strong, rgba(59,130,246,0.25));
+  margin-top: 8px;
+  opacity: 0;
+  transform: translateY(4px);
 }

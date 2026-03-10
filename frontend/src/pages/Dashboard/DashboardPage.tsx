@@ -10,7 +10,7 @@ import { UpcomingEventsWidget } from './UpcomingEvents/UpcomingEventsWidget';
 import styles from './DashboardPage.module.css';
 
 const WIDGET_COUNT = 5;
-const CASCADE_INTERVAL_MS = 175;
+const CASCADE_INTERVAL_MS = 300;
 
 export function DashboardPage() {
   const [data, setData] = useState<DashboardSummary | null>(null);

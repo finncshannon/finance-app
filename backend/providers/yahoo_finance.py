@@ -165,6 +165,15 @@ class YahooFinanceProvider(DataProvider):
         except Exception as e:
             raise ProviderConnectionError("yahoo", str(e)) from e
 
+        # Yahoo's dividendYield is always percentage format (0.4 = 0.4%,
+        # 2.72 = 2.72%).  Prefer trailingAnnualDividendYield (already decimal)
+        # and fall back to dividendYield / 100.
+        div_yield = _safe_float(info, "trailingAnnualDividendYield")
+        if div_yield is None:
+            raw = _safe_float(info, "dividendYield")
+            if raw is not None:
+                div_yield = raw / 100.0
+
         return KeyStatistics(
             ticker=ticker.upper(),
             pe_trailing=_safe_float(info, "trailingPE"),
@@ -173,7 +182,7 @@ class YahooFinanceProvider(DataProvider):
             price_to_sales=_safe_float(info, "priceToSalesTrailing12Months"),
             ev_to_revenue=_safe_float(info, "enterpriseToRevenue"),
             ev_to_ebitda=_safe_float(info, "enterpriseToEbitda"),
-            dividend_yield=_safe_float(info, "dividendYield"),
+            dividend_yield=div_yield,
             dividend_rate=_safe_float(info, "dividendRate"),
             beta=_safe_float(info, "beta"),
         )

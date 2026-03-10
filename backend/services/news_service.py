@@ -192,8 +192,18 @@ def _parse_single_feed(xml_bytes: bytes, feed_config: dict) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def _build_pattern(phrase: str) -> re.Pattern:
-    """Compile a word-boundary regex for a keyword phrase."""
+    """Compile a word-boundary regex for a keyword phrase.
+
+    Handles edge cases where trailing punctuation (e.g. periods in
+    'u.s.' or 'u.s.a.') breaks \\b word boundaries. For phrases ending
+    in a non-word character, we use a lookahead for whitespace/end
+    instead of \\b.
+    """
     escaped = re.escape(phrase)
+    # If phrase ends with a non-word char (period, ampersand, etc.),
+    # \b won't work — use lookahead instead
+    if not phrase[-1].isalnum() and not phrase[-1] == '_':
+        return re.compile(r"\b" + escaped + r"(?=\s|$)", re.IGNORECASE)
     return re.compile(r"\b" + escaped + r"\b", re.IGNORECASE)
 
 
@@ -235,7 +245,7 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         # Participants
         ("investor", 1.5), ("investors", 1.5), ("hedge fund", 2.5), ("mutual fund", 2.5),
         ("etf", 2.0), ("portfolio", 1.5), ("asset manager", 2.5),
-        ("ipo", 2.5), ("spac", 2.0), ("listing", 1.0), ("delisting", 2.0),
+        ("ipo", 2.5), ("spac", 2.0), ("delisting", 2.0),
         # Market events
         ("earnings", 2.0), ("quarterly results", 2.5), ("profit warning", 2.5),
         ("dividend", 2.0), ("share buyback", 2.5), ("buyback", 2.0),
@@ -255,7 +265,7 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         # Semiconductors
         ("semiconductor", 3.0), ("semiconductors", 3.0), ("chip", 1.5), ("chipmaker", 3.0),
         ("chips", 1.0), ("microchip", 2.5), ("processor", 2.0), ("gpu", 2.5), ("cpu", 2.0),
-        ("wafer", 2.0), ("foundry", 1.5), ("fab", 1.0), ("tsmc", 3.0),
+        ("wafer", 2.0), ("foundry", 1.5), ("tsmc", 3.0),
         # Companies (high-signal tech names)
         ("nvidia", 3.0), ("apple", 1.5), ("google", 1.5), ("alphabet", 2.5),
         ("microsoft", 2.0), ("meta platforms", 3.0), ("amazon", 1.0),
@@ -272,7 +282,7 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         ("electric vehicle", 2.5), ("blockchain", 2.0),
         ("5g", 2.0), ("6g", 2.0), ("satellite", 1.5), ("starlink", 2.5),
         # Software / industry
-        ("software", 1.5), ("saas", 2.5), ("app", 1.0), ("platform", 1.0),
+        ("software", 1.5), ("saas", 2.5),
         ("startup", 1.5), ("tech industry", 3.0), ("silicon valley", 3.0),
         ("tech giant", 3.0), ("big tech", 3.0), ("tech sector", 3.0),
         ("social media", 2.0), ("streaming", 1.5),
@@ -282,7 +292,7 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         ("waymo", 3.0), ("rivian", 3.0), ("lucid", 2.0),
         ("all-electric", 2.0), ("self driving", 3.0),
         ("brain-computer", 3.0), ("flying taxi", 3.0), ("flying taxis", 3.0),
-        ("digital", 1.0), ("tech", 1.5),
+        ("tech", 1.5),
     ]),
     ("Finance", [
         # Central banks / monetary policy
@@ -357,14 +367,14 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         # Consumer / housing
         ("consumer spending", 3.0), ("consumer confidence", 3.0),
         ("retail sales", 3.0), ("retail", 1.0), ("retailer", 2.0), ("retailers", 2.0),
-        ("stores", 1.0), ("shopping", 1.0), ("e-commerce", 2.0), ("walmart", 2.0),
-        ("target", 1.0), ("costco", 2.0), ("amazon", 1.0),
+        ("e-commerce", 2.0), ("walmart", 2.0),
+        ("costco", 2.0), ("amazon", 1.0),
         ("housing market", 3.0), ("housing starts", 3.0), ("home sales", 2.5),
         ("home prices", 2.5), ("real estate", 2.0), ("property market", 2.5),
         ("rent", 1.5), ("rental", 1.5), ("eviction", 2.0),
         # Industry
         ("manufacturing", 2.0), ("pmi", 2.5), ("industrial output", 3.0),
-        ("factory", 1.5), ("production", 1.0), ("supply", 1.0), ("demand", 1.0),
+        ("factory", 1.5),
         ("shortage", 1.5), ("surplus", 1.5),
         # Fiscal
         ("budget", 1.5), ("deficit", 2.0), ("national debt", 3.0),
@@ -374,7 +384,7 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         ("recall", 1.5), ("recalls", 1.5), ("price cap", 2.5), ("energy cap", 2.5),
         ("cost of living", 2.5), ("affordability", 2.0), ("price hike", 2.5),
         ("price rise", 2.0), ("price drop", 2.0), ("dynamic pricing", 3.0),
-        ("cashless", 2.5), ("stamps", 1.0), ("postage", 1.5),
+        ("cashless", 2.5), ("postage", 1.5),
         ("wholesale", 2.0), ("inventories", 2.0), ("inventory", 1.5),
         ("ceo", 1.5), ("quarterly", 1.5),
     ]),
@@ -391,8 +401,8 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         ("drilling", 2.0), ("offshore", 1.5), ("oil reserve", 3.0), ("oil flows", 3.0),
         ("energy crisis", 3.0),
         # Companies
-        ("exxon", 3.0), ("exxonmobil", 3.0), ("chevron", 2.5), ("shell", 1.5),
-        ("bp", 1.5), ("conocophillips", 3.0), ("totalenergies", 3.0),
+        ("exxon", 3.0), ("exxonmobil", 3.0), ("chevron", 2.5), ("shell", 1.0),
+        ("bp plc", 2.0), ("conocophillips", 3.0), ("totalenergies", 3.0),
         ("saudi aramco", 3.0), ("aramco", 2.5),
         # Renewables
         ("renewable energy", 3.0), ("renewables", 2.5), ("solar energy", 3.0),
@@ -433,7 +443,7 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         ("hospital", 2.0), ("hospitals", 2.0), ("healthcare", 2.5), ("health care", 2.5),
         ("medical device", 3.0), ("medical devices", 3.0), ("medtech", 3.0),
         ("surgeon", 2.0), ("surgery", 1.5), ("transplant", 2.0),
-        ("mental health", 2.5), ("public health", 2.5), ("who", 1.0),
+        ("mental health", 2.5), ("public health", 2.5), ("world health organization", 3.0),
         ("health insurance", 2.5), ("medicare", 2.5), ("medicaid", 2.5),
         ("opioid", 2.5), ("fentanyl", 2.5),
     ]),
@@ -449,7 +459,7 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         # Elections / campaigns
         ("election", 2.5), ("elections", 2.5), ("vote", 1.0), ("voter", 1.5),
         ("voting", 1.5), ("ballot", 2.0), ("campaign", 1.5), ("polling", 2.0),
-        ("primary", 1.0), ("caucus", 2.5), ("midterm", 2.5),
+        ("caucus", 2.5), ("midterm", 2.5),
         ("electoral", 2.5), ("swing state", 3.0), ("battleground", 2.0),
         # Governance
         ("legislation", 2.5), ("executive order", 3.0), ("veto", 2.5),
@@ -553,8 +563,8 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         # General sports
         ("sports", 2.0), ("athlete", 2.0), ("athletes", 2.0), ("championship", 2.0),
         ("tournament", 2.0), ("playoff", 2.5), ("playoffs", 2.5), ("semifinal", 2.5),
-        ("quarterfinal", 2.5), ("final", 1.0), ("finals", 1.5),
-        ("season", 1.0), ("coach", 1.5), ("roster", 2.5), ("draft", 2.0),
+        ("quarterfinal", 2.5), ("finals", 1.5),
+        ("coach", 1.5), ("roster", 2.5), ("draft", 2.0),
         ("mvp", 2.5), ("all-star", 2.5), ("hall of fame", 3.0),
         ("score", 1.0), ("scores", 1.0), ("win", 1.0), ("loss", 1.0),
         ("victory", 1.0), ("defeat", 1.0),
@@ -609,16 +619,16 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         ("oscar", 2.5), ("oscars", 2.5), ("academy award", 3.0),
         ("emmy", 2.5), ("emmys", 2.5), ("golden globe", 3.0),
         ("pixar", 3.0), ("disney", 2.0), ("marvel", 2.5), ("netflix", 2.0),
-        ("hbo", 2.0), ("streaming", 1.5), ("tv show", 2.5), ("series", 1.0),
+        ("hbo", 2.0), ("streaming", 1.5), ("tv show", 2.5),
         ("premiere", 1.5), ("sequel", 2.0), ("remake", 2.0),
         ("director", 1.5), ("actor", 1.5), ("actress", 2.0),
         # Music
         ("music", 1.5), ("musician", 2.0), ("concert", 2.0), ("tour", 1.0),
         ("album", 2.0), ("grammy", 3.0), ("grammys", 3.0),
         ("billboard", 2.0), ("hip hop", 2.5), ("rap", 1.5), ("pop music", 2.5),
-        ("singer", 2.0), ("rapper", 2.5), ("band", 1.0),
+        ("singer", 2.0), ("rapper", 2.5),
         # Celebrity / pop culture
-        ("celebrity", 2.5), ("celebrities", 2.5), ("fame", 1.0), ("viral", 1.5),
+        ("celebrity", 2.5), ("celebrities", 2.5), ("viral", 1.5),
         ("reality tv", 3.0), ("reality show", 3.0), ("red carpet", 2.5),
         ("paparazzi", 3.0), ("tabloid", 2.5), ("scandal", 1.5),
         # Gaming
@@ -627,7 +637,7 @@ _RAW_CATEGORY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
         ("esports", 3.0), ("twitch", 2.0),
         # Books / arts
         ("bestseller", 2.5), ("author", 1.5), ("novel", 1.5), ("book", 1.0),
-        ("exhibition", 1.5), ("museum", 1.5), ("gallery", 1.0),
+        ("exhibition", 1.5), ("museum", 1.5),
         ("broadway", 3.0), ("theater", 1.5), ("theatre", 1.5),
         # Notable names (entertainment-specific, weighted carefully)
         ("rihanna", 3.0), ("beyonce", 3.0), ("taylor swift", 3.0),
@@ -793,61 +803,50 @@ _REGION_MIN_SCORE = 2.0
 _TITLE_BOOST = 2.0
 
 
-def _score_all(
+def _score_text(
     text: str,
-    category_rules: list[tuple[str, list[tuple[re.Pattern, float]]]],
-    region_rules: list[tuple[str, list[tuple[re.Pattern, float]]]],
-) -> tuple[dict[str, float], dict[str, float]]:
-    """Score text against both category and region rules in one pass."""
-    cat_scores: dict[str, float] = {}
-    reg_scores: dict[str, float] = {}
-
-    for label, patterns in category_rules:
+    rules: list[tuple[str, list[tuple[re.Pattern, float]]]],
+) -> dict[str, float]:
+    """Score text against a single ruleset. Returns {label: score}."""
+    scores: dict[str, float] = {}
+    for label, patterns in rules:
         total = 0.0
         for pat, weight in patterns:
             if pat.search(text):
                 total += weight
         if total > 0:
-            cat_scores[label] = total
-
-    for label, patterns in region_rules:
-        total = 0.0
-        for pat, weight in patterns:
-            if pat.search(text):
-                total += weight
-        if total > 0:
-            reg_scores[label] = total
-
-    return cat_scores, reg_scores
+            scores[label] = total
+    return scores
 
 
 def _classify_article(article: dict) -> None:
     """Add category and region fields to an article dict (in-place).
 
-    Uses weighted scoring with title boost. The label with the highest
-    cumulative score wins, provided it exceeds the minimum threshold.
+    Scores snippet at 1x weight and title at TITLE_BOOST weight, then
+    sums them. The label with the highest total wins, provided it
+    exceeds the minimum threshold.
     """
     title = article.get("title", "")
     snippet = article.get("snippet", "")
-    full_text = f"{title} {snippet}"
 
-    # Single pass over full text
-    cat_full, reg_full = _score_all(full_text, _CATEGORY_RULES, _REGION_RULES)
-    # Single pass over title (for boost)
-    cat_title, reg_title = _score_all(title, _CATEGORY_RULES, _REGION_RULES)
+    # Score title and snippet separately to avoid double-counting
+    cat_title = _score_text(title, _CATEGORY_RULES)
+    cat_snippet = _score_text(snippet, _CATEGORY_RULES)
+    reg_title = _score_text(title, _REGION_RULES)
+    reg_snippet = _score_text(snippet, _REGION_RULES)
 
-    # Merge with title boost
+    # Merge: title gets TITLE_BOOST weight, snippet gets 1x
     cat_scores: dict[str, float] = {}
-    for label in set(cat_full) | set(cat_title):
-        cat_scores[label] = cat_full.get(label, 0) + cat_title.get(label, 0) * _TITLE_BOOST
+    for label in set(cat_title) | set(cat_snippet):
+        cat_scores[label] = cat_title.get(label, 0.0) * _TITLE_BOOST + cat_snippet.get(label, 0.0)
 
     reg_scores: dict[str, float] = {}
-    for label in set(reg_full) | set(reg_title):
-        reg_scores[label] = reg_full.get(label, 0) + reg_title.get(label, 0) * _TITLE_BOOST
+    for label in set(reg_title) | set(reg_snippet):
+        reg_scores[label] = reg_title.get(label, 0.0) * _TITLE_BOOST + reg_snippet.get(label, 0.0)
 
     # Pick best category
     if cat_scores:
-        best_cat = max(cat_scores, key=cat_scores.get)
+        best_cat = max(cat_scores, key=lambda k: cat_scores[k])
         if cat_scores[best_cat] >= _CATEGORY_MIN_SCORE:
             article["category"] = best_cat
         else:
@@ -857,7 +856,7 @@ def _classify_article(article: dict) -> None:
 
     # Pick best region
     if reg_scores:
-        best_reg = max(reg_scores, key=reg_scores.get)
+        best_reg = max(reg_scores, key=lambda k: reg_scores[k])
         if reg_scores[best_reg] >= _REGION_MIN_SCORE:
             article["region"] = best_reg
         else:

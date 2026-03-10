@@ -5,6 +5,7 @@ import { WatchlistPicker } from '../../components/ui/WatchlistPicker/WatchlistPi
 import { useTickerNavigation } from '../../hooks/useTickerNavigation';
 import { api } from '../../services/api';
 import type { CompanyProfile } from './types';
+import { TickerSearch } from './TickerSearch';
 import { FunctionGrid } from './FunctionGrid/FunctionGrid';
 import { FilingsTab } from './Filings/FilingsTab';
 import { FinancialsTab } from './Financials/FinancialsTab';
@@ -64,17 +65,13 @@ export function ResearchPage() {
     }
   }, [selectedTicker, loadProfile]);
 
-  const handleSearch = () => {
-    const t = tickerInput.trim().toUpperCase();
+  const handleSelect = (ticker: string) => {
+    const t = ticker.trim().toUpperCase();
     if (t) {
       setSelectedTicker(t);
       setTickerInput(t);
       setSubTab('research', 'home');
     }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSearch();
   };
 
   const goHome = () => setSubTab('research', 'home');
@@ -117,15 +114,11 @@ export function ResearchPage() {
       {/* Top bar */}
       <div className={styles.topBar}>
         <div className={styles.searchGroup}>
-          <input
-            className={styles.searchInput}
-            type="text"
-            placeholder="Ticker..."
+          <TickerSearch
             value={tickerInput}
-            onChange={(e) => setTickerInput(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onChange={setTickerInput}
+            onSelect={handleSelect}
           />
-          <button className={styles.searchBtn} onClick={handleSearch}>Go</button>
         </div>
 
         {!isHome && selectedTicker && (

@@ -78,6 +78,12 @@ class PortfolioRepo:
         await self.db.commit()
         return cursor.rowcount > 0
 
+    async def delete_all_positions(self) -> int:
+        """Delete all positions (lots cascade via FK). Returns count deleted."""
+        cursor = await self.db.execute("DELETE FROM portfolio_positions")
+        await self.db.commit()
+        return cursor.rowcount
+
     # --- portfolio_transactions ---
 
     async def get_transaction(self, transaction_id: int) -> dict | None:

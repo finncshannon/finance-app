@@ -154,6 +154,40 @@
   text-align: right;
 }
 
+.previewThRemove {
+  composes: previewTh;
+  width: 24px;
+  padding: 4px 2px;
+}
+
+.previewTdRemove {
+  padding: 2px 2px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: center;
+  width: 24px;
+}
+
+.removeRowBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--transition-micro);
+}
+
+.removeRowBtn:hover {
+  background: var(--color-negative-subtle);
+  color: var(--color-negative);
+}
+
 .previewTd {
   padding: 4px 8px;
   border-bottom: 1px solid var(--border-subtle);

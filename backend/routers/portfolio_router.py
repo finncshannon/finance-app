@@ -102,6 +102,17 @@ async def delete_position(position_id: int, request: Request):
         return error_response("POSITION_DELETE_ERROR", str(exc))
 
 
+@router.post("/positions/clear-all")
+async def delete_all_positions(request: Request):
+    """Remove all positions."""
+    try:
+        svc = _svc(request)
+        count = await svc.delete_all_positions()
+        return success_response(data={"deleted": count})
+    except Exception as exc:
+        return error_response("POSITION_DELETE_ERROR", str(exc))
+
+
 # =========================================================================
 # Lots
 # =========================================================================

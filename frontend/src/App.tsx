@@ -48,12 +48,14 @@ export function App() {
     if (backendReady) return;
 
     let cancelled = false;
+    let resolved = false;
 
     const poll = async () => {
-      while (!cancelled) {
+      while (!cancelled && !resolved) {
         try {
           const res = await fetch(HEALTH_URL);
-          if (res.ok) {
+          if (res.ok && !resolved) {
+            resolved = true;
             setBackendReadyLocal(true);
             setBackendReady(true);
             return;
@@ -61,7 +63,9 @@ export function App() {
         } catch {
           // Backend not up yet
         }
-        await new Promise((r) => setTimeout(r, HEALTH_POLL_MS));
+        if (!resolved) {
+          await new Promise((r) => setTimeout(r, HEALTH_POLL_MS));
+        }
       }
     };
 
@@ -138,15 +142,19 @@ export function App() {
           onBootComplete={handleBootComplete}
         />
       )}
-      <ModuleTabBar
-        activeModule={activeModule}
-        onModuleChange={(id: ModuleId) => setActiveModule(id)}
-      />
-      <main style={{ flex: 1, overflow: 'auto' }}>
-        <ErrorBoundary key={activeModule} moduleName={activeModule}>
-          <ActivePage />
-        </ErrorBoundary>
-      </main>
+      {backendReady && (
+        <>
+          <ModuleTabBar
+            activeModule={activeModule}
+            onModuleChange={(id: ModuleId) => setActiveModule(id)}
+          />
+          <main style={{ flex: 1, overflow: 'auto' }}>
+            <ErrorBoundary key={activeModule} moduleName={activeModule}>
+              <ActivePage />
+            </ErrorBoundary>
+          </main>
+        </>
+      )}
     </>
   );
 }
