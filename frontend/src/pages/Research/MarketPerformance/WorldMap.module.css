@@ -1,0 +1,42 @@
+.mapContainer {
+  position: relative;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px),
+    #000;
+  background-size: 40px 40px;
+  overflow: hidden;
+}
+
+.mapContainer svg {
+  display: block;
+}
+
+
+/* ── Tooltip ── */
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(15, 15, 15, 0.95);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.tooltipName {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tooltipPct {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+}

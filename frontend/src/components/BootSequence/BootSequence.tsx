@@ -8,14 +8,12 @@ interface BootSequenceProps {
   onBootComplete: () => void;
 }
 
-export type BootPhase = 'black' | 'frame' | 'identity' | 'checks' | 'dissolve' | 'done';
+export type BootPhase = 'black' | 'frame' | 'identity' | 'done';
 
 const PHASE_TIMINGS: Record<Exclude<BootPhase, 'done'>, number> = {
-  black: 300,
-  frame: 1500,
-  identity: 1800,
-  checks: 3500,
-  dissolve: 2000,
+  black: 800,
+  frame: 1400,
+  identity: 2200,
 };
 
 export function BootSequence({ backendReady, onBootComplete }: BootSequenceProps) {
@@ -41,21 +39,19 @@ export function BootSequence({ backendReady, onBootComplete }: BootSequenceProps
     const nextPhase: Record<string, BootPhase> = {
       black: 'frame',
       frame: 'identity',
-      identity: 'checks',
-      checks: 'dissolve',
-      dissolve: 'done',
+      identity: 'done',
     };
 
-    // For checks phase, wait for backend ready before advancing
-    if (phase === 'checks' && !backendReady) return;
+    // Identity phase: wait for backend ready before advancing
+    if (phase === 'identity' && !backendReady) return;
 
     const duration = PHASE_TIMINGS[phase as Exclude<BootPhase, 'done'>];
     const timer = setTimeout(() => {
       const next = nextPhase[phase] as BootPhase | undefined;
       if (!next) return;
-      if (next === 'dissolve') {
+      if (next === 'done') {
+        // Begin engine-to-idle crossfade as boot exits
         soundManager.fadeOutBootHum();
-        soundManager.playStartupChord();
       }
       setPhase(next);
     }, duration);
@@ -78,8 +74,8 @@ export function BootSequence({ backendReady, onBootComplete }: BootSequenceProps
   if (phase === 'done') return null;
 
   return (
-    <div className={`${styles.overlay} ${phase === 'dissolve' ? styles.overlayDissolve : ''}`}>
-      <BootHUD phase={phase} backendReady={backendReady} />
+    <div className={styles.overlay}>
+      <BootHUD phase={phase} />
     </div>
   );
 }

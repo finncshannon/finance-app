@@ -158,6 +158,8 @@ CREATE TABLE IF NOT EXISTS news_articles (
     snippet         TEXT,
     category        TEXT DEFAULT 'General',
     region          TEXT DEFAULT 'Global',
+    countries       TEXT DEFAULT '',
+    tags            TEXT DEFAULT '',
     coverage_count  INTEGER DEFAULT 1,
     fetched_at      TEXT NOT NULL
 );
@@ -166,6 +168,7 @@ CREATE INDEX IF NOT EXISTS idx_news_published ON news_articles(published_at);
 CREATE INDEX IF NOT EXISTS idx_news_category ON news_articles(category);
 CREATE INDEX IF NOT EXISTS idx_news_cat_pub ON news_articles(category, published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_news_reg_pub ON news_articles(region, published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_news_countries ON news_articles(countries);
 """
 
 
@@ -183,4 +186,12 @@ async def init_cache_db(db: DatabaseConnection) -> None:
     async with aiosqlite.connect(str(db.cache_db_path)) as cache_conn:
         await cache_conn.execute("PRAGMA journal_mode=WAL;")
         await cache_conn.executescript(_CACHE_DB_SCHEMA)
+        # Migrations: add columns if missing (existing DBs)
+        for col, default in [("countries", "''"), ("tags", "''")]:
+            try:
+                await cache_conn.execute(
+                    f"ALTER TABLE news_articles ADD COLUMN {col} TEXT DEFAULT {default}"
+                )
+            except Exception:
+                pass  # Column already exists
         await cache_conn.commit()

@@ -1,28 +1,39 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../../services/api';
 import { useUIStore } from '../../stores/uiStore';
+import { soundManager } from '../../services/soundManager';
 import type { DashboardSummary } from './types';
 import { MarketOverviewWidget } from './MarketOverview/MarketOverviewWidget';
 import { PortfolioSummaryWidget } from './PortfolioSummary/PortfolioSummaryWidget';
+import { NewsWidget } from './News/NewsWidget';
 import { WatchlistWidget } from './Watchlist/WatchlistWidget';
 import { RecentModelsWidget } from './RecentModels/RecentModelsWidget';
 import { UpcomingEventsWidget } from './UpcomingEvents/UpcomingEventsWidget';
 import styles from './DashboardPage.module.css';
 
-const WIDGET_COUNT = 5;
-const CASCADE_INTERVAL_MS = 300;
+const WIDGET_COUNT = 6;
+const INITIAL_DELAY_MS = 400;
+const SHELL_STAGGER_MS = 250;
+const HEADER_DELAY_MS = 400;
+const HEADER_STAGGER_MS = 200;
+const DATA_DELAY_MS = 400;
+
+// Widget indices: 0=Market, 1=Portfolio, 2=News, 3=Events, 4=Watchlist, 5=Models
+const VERTICAL_WIDGETS = [1, 2, 3]; // portfolio, news, events — top-down reveal
+const DATA_ORDER = [0, 1, 2, 3, 4, 5]; // Market → Portfolio → News → Events → Watchlist → Models
 
 export function DashboardPage() {
   const [data, setData] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [animationPhase, setAnimationPhase] = useState(-1);
+
+  const [widgetStages, setWidgetStages] = useState<number[]>(
+    Array(WIDGET_COUNT).fill(-1)
+  );
 
   const justBooted = useUIStore((s) => s.justBooted);
   const dashboardAnimationPlayed = useUIStore((s) => s.dashboardAnimationPlayed);
   const setDashboardAnimationPlayed = useUIStore((s) => s.setDashboardAnimationPlayed);
-
-  const animationStarted = useRef(false);
 
   const fetchDashboard = useCallback(async () => {
     setLoading(true);
@@ -41,95 +52,145 @@ export function DashboardPage() {
     fetchDashboard();
   }, [fetchDashboard]);
 
-  // Widget entry animation cascade
+  // Shell cascade — runs once on mount
   useEffect(() => {
-    // Skip animation if not first boot or already played
-    if (!justBooted || dashboardAnimationPlayed) {
-      setAnimationPhase(WIDGET_COUNT - 1);
+    if (dashboardAnimationPlayed) {
+      setWidgetStages(Array(WIDGET_COUNT).fill(2));
       return;
     }
 
-    // Wait for data before animating
-    if (!data || animationStarted.current) return;
-
-    animationStarted.current = true;
-
     const timers: ReturnType<typeof setTimeout>[] = [];
+
+    // Phase 1: Shells pop in
     for (let i = 0; i < WIDGET_COUNT; i++) {
+      const shellTime = INITIAL_DELAY_MS + i * SHELL_STAGGER_MS;
       timers.push(
         setTimeout(() => {
-          setAnimationPhase(i);
-        }, i * CASCADE_INTERVAL_MS)
+          setWidgetStages((prev) => {
+            const next = [...prev];
+            next[i] = 0;
+            return next;
+          });
+          soundManager.playWidgetOnline();
+        }, shellTime)
       );
     }
 
-    // Mark animation as played after cascade completes
+    // Phase 2: Headers build in
+    const shellsDone = INITIAL_DELAY_MS + (WIDGET_COUNT - 1) * SHELL_STAGGER_MS;
+    const headerStart = shellsDone + HEADER_DELAY_MS;
+
+    for (let i = 0; i < WIDGET_COUNT; i++) {
+      const headerTime = headerStart + i * HEADER_STAGGER_MS;
+      timers.push(
+        setTimeout(() => {
+          setWidgetStages((prev) => {
+            const next = [...prev];
+            next[i] = 1;
+            return next;
+          });
+          soundManager.playWidgetOnline();
+        }, headerTime)
+      );
+    }
+
+    // Phase 3: Data populates with random gaps
+    const headersDone = headerStart + (WIDGET_COUNT - 1) * HEADER_STAGGER_MS;
+    const dataStart = headersDone + DATA_DELAY_MS;
+
+    let cursor = dataStart;
+    for (const idx of DATA_ORDER) {
+      const t = cursor;
+      timers.push(
+        setTimeout(() => {
+          setWidgetStages((prev) => {
+            const next = [...prev];
+            next[idx] = 2;
+            return next;
+          });
+          soundManager.playWidgetOnline();
+        }, t)
+      );
+      cursor += 150 + Math.random() * 350;
+    }
+
     timers.push(
       setTimeout(() => {
         setDashboardAnimationPlayed(true);
-      }, (WIDGET_COUNT - 1) * CASCADE_INTERVAL_MS + 300)
+      }, cursor + 400)
     );
 
     return () => timers.forEach(clearTimeout);
-  }, [justBooted, dashboardAnimationPlayed, data, setDashboardAnimationPlayed]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const widgetClass = (index: number): string => {
-    return (animationPhase >= index ? styles.widgetVisible : styles.widgetHidden) ?? '';
+    const stage = widgetStages[index] ?? -1;
+    if (stage < 0) return styles.widgetHidden ?? '';
+    if (stage === 0) return styles.widgetShell ?? '';
+    if (stage === 1) return styles.widgetHeaderOn ?? '';
+    // Skip animation classes if already played (tab switch)
+    if (dashboardAnimationPlayed) return styles.widgetReady ?? '';
+    if (VERTICAL_WIDGETS.includes(index)) return styles.widgetFullOnVertical ?? '';
+    return styles.widgetFullOn ?? '';
   };
 
-  if (loading && !data) {
-    return (
-      <div className={styles.page}>
-        <div className={styles.loading}>Loading dashboard...</div>
-      </div>
-    );
-  }
+  const animating = justBooted && !dashboardAnimationPlayed;
 
   return (
     <div className={styles.page}>
-      {/* Header */}
-      <div className={styles.header}>
-        <h2 className={styles.title}>Dashboard</h2>
-        <button
-          className={styles.refreshBtn}
-          onClick={fetchDashboard}
-          disabled={loading}
-        >
-          {loading && <span className={styles.spinner} />}
-          {loading ? 'Refreshing...' : 'Refresh'}
-        </button>
-      </div>
+      {!animating && (
+        <div className={styles.header}>
+          <h2 className={styles.title}>Dashboard</h2>
+          <button
+            className={styles.refreshBtn}
+            onClick={fetchDashboard}
+            disabled={loading}
+          >
+            {loading && <span className={styles.spinner} />}
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </button>
+        </div>
+      )}
 
-      {error && <div className={styles.errorBanner}>{error}</div>}
+      {error && !animating && <div className={styles.errorBanner}>{error}</div>}
 
-      {/* Grid */}
-      {data && (
-        <div className={styles.grid}>
-          {/* Row 1: Market (left) + Portfolio (right) */}
+      <div className={styles.grid}>
+        {/* Left column: Market + News */}
+        <div className={styles.gridColLeft}>
           <div className={`${styles.gridMarket} ${widgetClass(0)}`}>
-            <MarketOverviewWidget market={data.market} />
+            {data && <MarketOverviewWidget market={data.market} />}
           </div>
-          <div className={`${styles.gridPortfolio} ${widgetClass(1)}`}>
-            <PortfolioSummaryWidget portfolio={data.portfolio} />
+          <div className={`${styles.gridNews} ${widgetClass(2)}`}>
+            <NewsWidget />
           </div>
+        </div>
 
-          {/* Row 2: Watchlist (full width) */}
-          <div className={`${styles.gridWatchlist} ${widgetClass(2)}`}>
+        {/* Right column: Portfolio + Events */}
+        <div className={styles.gridColRight}>
+          <div className={`${styles.gridPortfolio} ${widgetClass(1)}`}>
+            {data && <PortfolioSummaryWidget portfolio={data.portfolio} />}
+          </div>
+          <div className={`${styles.gridEvents} ${widgetClass(3)}`}>
+            <UpcomingEventsWidget />
+          </div>
+        </div>
+
+        {/* Full width: Watchlist */}
+        <div className={`${styles.gridWatchlist} ${widgetClass(4)}`}>
+          {data && (
             <WatchlistWidget
               watchlists={data.watchlists}
               onRefresh={fetchDashboard}
             />
-          </div>
-
-          {/* Row 3: Models (left) + Events (right) */}
-          <div className={`${styles.gridModels} ${widgetClass(3)}`}>
-            <RecentModelsWidget models={data.recent_models} />
-          </div>
-          <div className={`${styles.gridEvents} ${widgetClass(4)}`}>
-            <UpcomingEventsWidget />
-          </div>
+          )}
         </div>
-      )}
+
+        {/* Full width: Recent Models */}
+        <div className={`${styles.gridModels} ${widgetClass(5)}`}>
+          {data && <RecentModelsWidget models={data.recent_models} />}
+        </div>
+      </div>
     </div>
   );
 }

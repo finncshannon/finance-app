@@ -33,13 +33,14 @@ let resolvedPythonCmd = 'python';
 
 // --- Embedded Python Resolution ---
 function getEmbeddedPythonPath(): string | null {
+  const binaryName = process.platform === 'win32' ? 'python.exe' : 'python3';
   const resourcesPath = process.resourcesPath || path.join(__dirname, '..', 'resources');
-  const embeddedPath = path.join(resourcesPath, 'python', 'python.exe');
+  const embeddedPath = path.join(resourcesPath, 'python', binaryName);
   if (fs.existsSync(embeddedPath)) {
     return embeddedPath;
   }
   // Also check dev-time location (electron/resources/python/)
-  const devPath = path.join(__dirname, '..', 'resources', 'python', 'python.exe');
+  const devPath = path.join(__dirname, '..', 'resources', 'python', binaryName);
   if (fs.existsSync(devPath)) {
     return devPath;
   }
@@ -482,10 +483,11 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', async () => {
-  // Save state and shut down backend
   saveWindowState();
-  await stopBackend();
-  app.quit();
+  if (process.platform !== 'darwin') {
+    await stopBackend();
+    app.quit();
+  }
 });
 
 app.on('before-quit', async () => {

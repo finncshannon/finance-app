@@ -36,9 +36,8 @@
 /* ── HUD Frame ── */
 .hudFrame {
   position: relative;
-  width: 480px;
-  max-width: 85vw;
-  padding: 40px 48px;
+  width: auto;
+  padding: 32px 48px;
   border: 1px solid transparent;
   opacity: 0;
 }
@@ -46,7 +45,7 @@
 .hudFrameVisible {
   opacity: 1;
   border-color: var(--hud-cyan-dim, rgba(59,130,246,0.3));
-  animation: frameDraw 1.2s ease-out forwards;
+  animation: frameDraw 1.3s ease-in-out forwards;
 }
 
 @keyframes frameDraw {
@@ -109,17 +108,19 @@
 /* ── Title Area ── */
 .hudTitleArea {
   text-align: center;
-  margin-bottom: 32px;
+  margin: 0;
 }
 
 .hudTitle {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 28px;
+  font-size: 48px;
   font-weight: 700;
-  letter-spacing: 8px;
+  letter-spacing: 12px;
   color: var(--hud-cyan, #3B82F6);
   text-shadow: 0 0 20px var(--glow-color-boot, rgba(59,130,246,0.4)),
                0 0 40px rgba(59,130,246,0.15);
+  min-width: 7ch;
+  display: inline-block;
 }
 
 .hudCursor {
@@ -133,11 +134,15 @@
 }
 
 .hudVersion {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: 11px;
   color: var(--text-tertiary, #737373);
   letter-spacing: 2px;
-  margin-top: 8px;
+  text-align: center;
   opacity: 0;
   transform: translateY(4px);
 }

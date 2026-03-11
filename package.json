@@ -19,6 +19,9 @@
     "release": "npm run bundle-python && npm run build:frontend && npm run build:electron && cd electron && npx electron-builder --config electron-builder.yml --win --publish always",
     "lint:frontend": "cd frontend && npm run lint",
     "lint": "npm run lint:frontend",
+    "package:mac": "npm run build:frontend && npm run build:electron && cd electron && npx electron-builder --config electron-builder.yml --mac",
+    "release:mac": "npm run build:frontend && npm run build:electron && cd electron && npx electron-builder --config electron-builder.yml --mac --publish always",
+    "setup": "node -e \"const {execSync}=require('child_process');execSync(process.platform==='win32'?'scripts\\\\setup-win.bat':'bash scripts/setup-mac.sh',{stdio:'inherit'});\"",
     "format": "cd frontend && npm run format"
   },
   "engines": {

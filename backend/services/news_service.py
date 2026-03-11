@@ -25,49 +25,171 @@ USER_AGENT = (
 # ---------------------------------------------------------------------------
 
 RSS_FEEDS: list[dict] = [
-    # Google News — top stories (aggregator, pulls from many sources)
+    # ── US core feeds ──
     {"url": "https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
      "default_source": "Google News", "has_source_tag": True},
-    # Google News — business
     {"url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en",
      "default_source": "Google News", "has_source_tag": True},
-    # Google News — world
     {"url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtVnVHZ0pWVXlnQVAB?hl=en-US&gl=US&ceid=US:en",
      "default_source": "Google News", "has_source_tag": True},
-    # Yahoo Finance — market & company news
     {"url": "https://finance.yahoo.com/news/rssindex",
      "default_source": "Yahoo Finance", "has_source_tag": False},
-    # CNBC — top news
     {"url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114",
      "default_source": "CNBC", "has_source_tag": False},
-    # CNBC — finance
     {"url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664",
      "default_source": "CNBC", "has_source_tag": False},
-    # BBC — world news
-    {"url": "https://feeds.bbci.co.uk/news/world/rss.xml",
-     "default_source": "BBC News", "has_source_tag": False},
-    # BBC — business
-    {"url": "https://feeds.bbci.co.uk/news/business/rss.xml",
-     "default_source": "BBC News", "has_source_tag": False},
-    # MarketWatch — top stories
     {"url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",
      "default_source": "MarketWatch", "has_source_tag": False},
-    # MarketWatch — market pulse
     {"url": "https://feeds.content.dowjones.io/public/rss/mw_marketpulse",
      "default_source": "MarketWatch", "has_source_tag": False},
-    # NPR — news
     {"url": "https://feeds.npr.org/1001/rss.xml",
      "default_source": "NPR", "has_source_tag": False},
-    # Reuters — via Google News search (reliable fallback)
     {"url": "https://news.google.com/rss/search?q=site:reuters.com&hl=en-US&gl=US&ceid=US:en",
      "default_source": "Reuters", "has_source_tag": True},
-    # AP — via Google News search (reliable fallback)
     {"url": "https://news.google.com/rss/search?q=site:apnews.com&hl=en-US&gl=US&ceid=US:en",
      "default_source": "AP News", "has_source_tag": True},
+
+    # ── BBC regional feeds ──
+    {"url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+     "default_source": "BBC News", "has_source_tag": False},
+    {"url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+     "default_source": "BBC News", "has_source_tag": False},
+    {"url": "https://feeds.bbci.co.uk/news/world/europe/rss.xml",
+     "default_source": "BBC News", "has_source_tag": False},
+    {"url": "https://feeds.bbci.co.uk/news/world/asia/rss.xml",
+     "default_source": "BBC News", "has_source_tag": False},
+    {"url": "https://feeds.bbci.co.uk/news/world/middle_east/rss.xml",
+     "default_source": "BBC News", "has_source_tag": False},
+    {"url": "https://feeds.bbci.co.uk/news/world/africa/rss.xml",
+     "default_source": "BBC News", "has_source_tag": False},
+    {"url": "https://feeds.bbci.co.uk/news/world/latin_america/rss.xml",
+     "default_source": "BBC News", "has_source_tag": False},
+    {"url": "https://feeds.bbci.co.uk/news/world/australia/rss.xml",
+     "default_source": "BBC News", "has_source_tag": False},
+
+    # ── Google News — Tier 1 country feeds (major markets) ──
+    {"url": "https://news.google.com/rss?hl=en&gl=GB&ceid=GB:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "GB"},
+    {"url": "https://news.google.com/rss?hl=en&gl=DE&ceid=DE:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "DE"},
+    {"url": "https://news.google.com/rss?hl=en&gl=FR&ceid=FR:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "FR"},
+    {"url": "https://news.google.com/rss?hl=en&gl=JP&ceid=JP:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "JP"},
+    {"url": "https://news.google.com/rss?hl=en&gl=CN&ceid=CN:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "CN"},
+    {"url": "https://news.google.com/rss?hl=en&gl=IN&ceid=IN:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "IN"},
+    {"url": "https://news.google.com/rss?hl=en&gl=BR&ceid=BR:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "BR"},
+    {"url": "https://news.google.com/rss?hl=en&gl=AU&ceid=AU:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "AU"},
+
+    # ── Google News — Tier 2 country feeds ──
+    {"url": "https://news.google.com/rss?hl=en&gl=CA&ceid=CA:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "CA"},
+    {"url": "https://news.google.com/rss?hl=en&gl=KR&ceid=KR:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "KR"},
+    {"url": "https://news.google.com/rss?hl=en&gl=IT&ceid=IT:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "IT"},
+    {"url": "https://news.google.com/rss?hl=en&gl=ES&ceid=ES:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "ES"},
+    {"url": "https://news.google.com/rss?hl=en&gl=MX&ceid=MX:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "MX"},
+    {"url": "https://news.google.com/rss?hl=en&gl=SG&ceid=SG:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "SG"},
+    {"url": "https://news.google.com/rss?hl=en&gl=HK&ceid=HK:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "HK"},
+    {"url": "https://news.google.com/rss?hl=en&gl=SE&ceid=SE:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "SE"},
+    {"url": "https://news.google.com/rss?hl=en&gl=CH&ceid=CH:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "CH"},
+    {"url": "https://news.google.com/rss?hl=en&gl=NL&ceid=NL:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "NL"},
+    {"url": "https://news.google.com/rss?hl=en&gl=ZA&ceid=ZA:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "ZA"},
+    {"url": "https://news.google.com/rss?hl=en&gl=SA&ceid=SA:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "SA"},
+    {"url": "https://news.google.com/rss?hl=en&gl=TR&ceid=TR:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "TR"},
+    {"url": "https://news.google.com/rss?hl=en&gl=NZ&ceid=NZ:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "NZ"},
+    {"url": "https://news.google.com/rss?hl=en&gl=ID&ceid=ID:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "ID"},
+    {"url": "https://news.google.com/rss?hl=en&gl=PH&ceid=PH:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "PH"},
+    {"url": "https://news.google.com/rss?hl=en&gl=TW&ceid=TW:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "TW"},
+    {"url": "https://news.google.com/rss?hl=en&gl=MY&ceid=MY:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "MY"},
+    {"url": "https://news.google.com/rss?hl=en&gl=PK&ceid=PK:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "PK"},
+    {"url": "https://news.google.com/rss?hl=en&gl=NG&ceid=NG:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "NG"},
+    {"url": "https://news.google.com/rss?hl=en&gl=EG&ceid=EG:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "EG"},
+    {"url": "https://news.google.com/rss?hl=en&gl=AE&ceid=AE:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "AE"},
+    {"url": "https://news.google.com/rss?hl=en&gl=IL&ceid=IL:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "IL"},
+    {"url": "https://news.google.com/rss?hl=en&gl=CO&ceid=CO:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "CO"},
+    {"url": "https://news.google.com/rss?hl=en&gl=AR&ceid=AR:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "AR"},
+    {"url": "https://news.google.com/rss?hl=en&gl=CL&ceid=CL:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "CL"},
+    {"url": "https://news.google.com/rss?hl=en&gl=LT&ceid=LT:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "LT"},
+    {"url": "https://news.google.com/rss?hl=en&gl=LV&ceid=LV:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "LV"},
+    {"url": "https://news.google.com/rss?hl=en&gl=EE&ceid=EE:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "EE"},
+    {"url": "https://news.google.com/rss?hl=en&gl=KW&ceid=KW:en",
+     "default_source": "Google News", "has_source_tag": True, "country_hint": "KW"},
+
+    # ── Google News — Tier 3 search-based (smaller/harder markets) ──
+    {"url": "https://news.google.com/rss/search?q=Norway+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Denmark+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Finland+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Poland+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Greece+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Austria+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Ireland+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Belgium+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Portugal+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Baltic+Lithuania+Latvia+Estonia+economy&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Russia+economy+OR+market+OR+sanctions&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Thailand+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Vietnam+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Chile+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Peru+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Venezuela+economy+OR+oil+OR+crisis&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Kenya+OR+Morocco+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Kuwait+economy+OR+oil+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
+    {"url": "https://news.google.com/rss/search?q=Colombia+economy+OR+market&hl=en&gl=US&ceid=US:en",
+     "default_source": "Google News", "has_source_tag": True},
 ]
 
 # Cache
-_MIN_FETCH_INTERVAL = 90  # seconds
+_MIN_FETCH_INTERVAL = 120  # seconds (increased for 60+ feeds)
 _last_fetch_time: float = 0.0
 _cached_articles: list[dict] = []
 
@@ -168,13 +290,17 @@ def _parse_single_feed(xml_bytes: bytes, feed_config: dict) -> list[dict]:
             if source and clean_title.endswith(f" - {source}"):
                 clean_title = clean_title[: -(len(source) + 3)].strip()
 
-            articles.append({
+            article = {
                 "title": clean_title,
                 "link": link,
                 "source": source,
                 "published": pub_date,
                 "snippet": snippet,
-            })
+            }
+            # Pass through country hint from feed config
+            if feed_config.get("country_hint"):
+                article["_country_hint"] = feed_config["country_hint"]
+            articles.append(article)
         except Exception as exc:
             logger.debug("Skipping malformed item in %s: %s", default_source, exc)
             continue
@@ -791,13 +917,130 @@ _RAW_REGION_RULES: list[tuple[str, list[tuple[str, float]]]] = [
     ]),
 ]
 
+# ── Country-level keyword definitions (maps to ISO2 country codes) ──
+# Used to tag articles with specific countries for the Market Performance globe.
+_RAW_COUNTRY_RULES: list[tuple[str, list[tuple[str, float]]]] = [
+    # Europe
+    ("GB", [("united kingdom", 3.0), ("britain", 2.5), ("british", 2.0), ("england", 2.0),
+            ("london", 2.0), ("ftse", 2.5), ("bank of england", 3.0), ("nhs", 2.0),
+            ("downing street", 3.0), ("starmer", 2.5), ("scotland", 2.0), ("wales", 2.0)]),
+    ("DE", [("germany", 3.0), ("german", 2.0), ("berlin", 2.0), ("dax", 2.5),
+            ("bundesbank", 3.0), ("scholz", 2.5), ("volkswagen", 2.5), ("siemens", 2.0)]),
+    ("FR", [("france", 3.0), ("french", 2.0), ("paris", 1.5), ("macron", 2.5),
+            ("elysee", 3.0), ("cac 40", 3.0), ("lvmh", 2.5), ("totalenergies", 2.5)]),
+    ("IT", [("italy", 3.0), ("italian", 2.0), ("rome", 1.5), ("milan", 1.5),
+            ("meloni", 2.5)]),
+    ("ES", [("spain", 3.0), ("spanish", 2.0), ("madrid", 1.5), ("ibex", 2.5)]),
+    ("CH", [("switzerland", 3.0), ("swiss", 2.5), ("zurich", 2.0), ("geneva", 2.0),
+            ("ubs", 2.0), ("credit suisse", 3.0), ("davos", 2.5)]),
+    ("SE", [("sweden", 3.0), ("swedish", 2.0), ("stockholm", 2.0)]),
+    ("NL", [("netherlands", 3.0), ("dutch", 2.0), ("amsterdam", 2.0), ("hague", 2.0),
+            ("asml", 2.5), ("shell", 1.5)]),
+    ("NO", [("norway", 3.0), ("norwegian", 2.0), ("oslo", 2.0), ("equinor", 2.5),
+            ("sovereign wealth fund", 2.0)]),
+    ("DK", [("denmark", 3.0), ("danish", 2.0), ("copenhagen", 2.0), ("novo nordisk", 3.0),
+            ("maersk", 2.5)]),
+    ("PL", [("poland", 3.0), ("polish", 2.0), ("warsaw", 2.0)]),
+    ("GR", [("greece", 3.0), ("greek", 2.0), ("athens", 2.0)]),
+    ("TR", [("turkey", 2.5), ("turkish", 2.0), ("ankara", 2.5), ("istanbul", 2.0),
+            ("erdogan", 2.5), ("lira", 1.5)]),
+    ("AT", [("austria", 3.0), ("austrian", 2.0), ("vienna", 2.0)]),
+    ("FI", [("finland", 3.0), ("finnish", 2.0), ("helsinki", 2.0), ("nokia", 2.0)]),
+    ("IE", [("ireland", 3.0), ("irish", 2.0), ("dublin", 2.0)]),
+    ("BE", [("belgium", 3.0), ("belgian", 2.0), ("brussels", 1.5)]),
+    ("PT", [("portugal", 3.0), ("portuguese", 2.0), ("lisbon", 2.0)]),
+    ("LT", [("lithuania", 3.0), ("lithuanian", 2.5), ("vilnius", 2.5)]),
+    ("LV", [("latvia", 3.0), ("latvian", 2.5), ("riga", 2.5)]),
+    ("EE", [("estonia", 3.0), ("estonian", 2.5), ("tallinn", 2.5)]),
+    ("RU", [("russia", 3.0), ("russian", 2.5), ("moscow", 2.5), ("kremlin", 3.0),
+            ("putin", 2.5), ("ruble", 2.5), ("rosneft", 2.5), ("gazprom", 3.0)]),
+    # Asia
+    ("JP", [("japan", 3.0), ("japanese", 2.0), ("tokyo", 2.5), ("nikkei", 2.5),
+            ("bank of japan", 3.0), ("boj", 2.5), ("yen", 2.0), ("toyota", 2.0),
+            ("sony", 2.0)]),
+    ("CN", [("china", 3.0), ("chinese", 2.0), ("beijing", 2.5), ("shanghai", 2.0),
+            ("xi jinping", 3.0), ("ccp", 2.5), ("yuan", 2.0), ("renminbi", 2.5),
+            ("shenzhen", 2.0), ("alibaba", 2.5), ("tencent", 2.5)]),
+    ("KR", [("south korea", 3.0), ("korean", 2.0), ("seoul", 2.5), ("samsung", 2.5),
+            ("hyundai", 2.0), ("kospi", 3.0), ("won", 1.5)]),
+    ("HK", [("hong kong", 3.0), ("hang seng", 3.0)]),
+    ("TW", [("taiwan", 3.0), ("taiwanese", 2.5), ("taipei", 2.5), ("tsmc", 3.0)]),
+    ("IN", [("india", 3.0), ("indian", 2.0), ("new delhi", 2.5), ("mumbai", 2.0),
+            ("modi", 2.0), ("rbi", 2.0), ("rupee", 2.5), ("sensex", 3.0), ("nifty", 2.5),
+            ("reliance", 1.5), ("tata", 2.0), ("infosys", 2.5)]),
+    ("SG", [("singapore", 3.0), ("singaporean", 2.5)]),
+    ("TH", [("thailand", 3.0), ("thai", 2.0), ("bangkok", 2.0), ("baht", 2.0)]),
+    ("ID", [("indonesia", 3.0), ("indonesian", 2.5), ("jakarta", 2.5), ("rupiah", 2.5)]),
+    ("MY", [("malaysia", 3.0), ("malaysian", 2.5), ("kuala lumpur", 2.5), ("ringgit", 2.5)]),
+    ("VN", [("vietnam", 3.0), ("vietnamese", 2.5), ("hanoi", 2.5), ("ho chi minh", 2.5)]),
+    ("PH", [("philippines", 3.0), ("filipino", 2.5), ("manila", 2.5), ("peso", 1.5)]),
+    ("PK", [("pakistan", 3.0), ("pakistani", 2.5), ("islamabad", 2.5), ("karachi", 2.5)]),
+    # Americas
+    ("US", [("united states", 3.0), ("u.s.", 3.0), ("u.s.a.", 3.0), ("american", 1.5),
+            ("wall street", 2.5), ("nasdaq", 2.0), ("nyse", 2.5), ("federal reserve", 2.5),
+            ("white house", 3.0), ("congress", 2.0), ("pentagon", 2.5),
+            ("washington d.c.", 3.0), ("california", 1.5), ("texas", 1.5),
+            ("new york", 1.5), ("silicon valley", 2.0)]),
+    ("CA", [("canada", 3.0), ("canadian", 2.5), ("ottawa", 2.0), ("toronto", 2.0),
+            ("trudeau", 2.5), ("alberta", 2.0), ("quebec", 2.0), ("vancouver", 2.0)]),
+    ("MX", [("mexico", 3.0), ("mexican", 2.5), ("mexico city", 2.5), ("peso", 1.5)]),
+    ("BR", [("brazil", 3.0), ("brazilian", 2.5), ("sao paulo", 2.5), ("brasilia", 2.5),
+            ("lula", 2.5), ("real", 1.0), ("bovespa", 3.0), ("petrobras", 2.5)]),
+    ("CL", [("chile", 3.0), ("chilean", 2.5), ("santiago", 2.0)]),
+    ("AR", [("argentina", 3.0), ("argentine", 2.5), ("buenos aires", 2.5),
+            ("milei", 2.5)]),
+    ("CO", [("colombia", 3.0), ("colombian", 2.5), ("bogota", 2.5)]),
+    ("PE", [("peru", 3.0), ("peruvian", 2.5), ("lima", 2.0)]),
+    ("VE", [("venezuela", 3.0), ("venezuelan", 2.5), ("caracas", 2.5), ("maduro", 3.0)]),
+    # Middle East & Africa
+    ("IL", [("israel", 3.0), ("israeli", 2.5), ("tel aviv", 2.5), ("jerusalem", 2.0),
+            ("netanyahu", 2.5), ("idf", 2.5), ("shekel", 2.5)]),
+    ("SA", [("saudi arabia", 3.0), ("saudi", 2.5), ("riyadh", 2.5), ("aramco", 2.5),
+            ("mbs", 2.5), ("neom", 3.0)]),
+    ("AE", [("uae", 3.0), ("abu dhabi", 2.5), ("dubai", 2.5), ("emirates", 2.0)]),
+    ("QA", [("qatar", 3.0), ("doha", 2.5)]),
+    ("KW", [("kuwait", 3.0), ("kuwaiti", 2.5)]),
+    ("ZA", [("south africa", 3.0), ("johannesburg", 2.5), ("cape town", 2.5),
+            ("rand", 1.5), ("anc", 2.0)]),
+    ("EG", [("egypt", 3.0), ("egyptian", 2.5), ("cairo", 2.5)]),
+    ("NG", [("nigeria", 3.0), ("nigerian", 2.5), ("lagos", 2.5), ("abuja", 2.5),
+            ("naira", 2.5)]),
+    ("KE", [("kenya", 3.0), ("kenyan", 2.5), ("nairobi", 2.5)]),
+    ("MA", [("morocco", 3.0), ("moroccan", 2.5), ("casablanca", 2.5), ("rabat", 2.5)]),
+    # Oceania
+    ("AU", [("australia", 3.0), ("australian", 2.5), ("sydney", 2.0), ("melbourne", 2.0),
+            ("canberra", 2.0), ("asx", 2.5), ("aussie dollar", 2.5)]),
+    ("NZ", [("new zealand", 3.0), ("kiwi", 1.5), ("auckland", 2.0), ("wellington", 2.0)]),
+]
+
 # Pre-compile all patterns at module load
 _CATEGORY_RULES = _build_rules(_RAW_CATEGORY_RULES)
 _REGION_RULES = _build_rules(_RAW_REGION_RULES)
+_COUNTRY_RULES = _build_rules(_RAW_COUNTRY_RULES)
 
 # Minimum score threshold — below this, classify as General / Global
 _CATEGORY_MIN_SCORE = 2.0
 _REGION_MIN_SCORE = 2.0
+_COUNTRY_MIN_SCORE = 2.5
+
+# ISO 2-letter code → full country name (used for human-readable tags)
+_COUNTRY_NAMES: dict[str, str] = {
+    "US": "United States", "GB": "United Kingdom", "DE": "Germany",
+    "FR": "France", "IT": "Italy", "ES": "Spain", "CH": "Switzerland",
+    "SE": "Sweden", "NL": "Netherlands", "NO": "Norway", "DK": "Denmark",
+    "PL": "Poland", "GR": "Greece", "TR": "Turkey", "AT": "Austria",
+    "FI": "Finland", "IE": "Ireland", "BE": "Belgium", "PT": "Portugal",
+    "LT": "Lithuania", "LV": "Latvia", "EE": "Estonia", "RU": "Russia",
+    "JP": "Japan", "CN": "China", "KR": "South Korea", "HK": "Hong Kong",
+    "TW": "Taiwan", "IN": "India", "SG": "Singapore", "TH": "Thailand",
+    "ID": "Indonesia", "MY": "Malaysia", "VN": "Vietnam", "PH": "Philippines",
+    "PK": "Pakistan", "CA": "Canada", "MX": "Mexico", "BR": "Brazil",
+    "CL": "Chile", "AR": "Argentina", "CO": "Colombia", "PE": "Peru",
+    "VE": "Venezuela", "IL": "Israel", "SA": "Saudi Arabia", "AE": "UAE",
+    "QA": "Qatar", "KW": "Kuwait", "ZA": "South Africa", "EG": "Egypt",
+    "NG": "Nigeria", "KE": "Kenya", "MA": "Morocco", "AU": "Australia",
+    "NZ": "New Zealand",
+}
 
 # Title match multiplier — keywords found in the title carry more weight
 _TITLE_BOOST = 2.0
@@ -863,6 +1106,29 @@ def _classify_article(article: dict) -> None:
             article["region"] = "Global"
     else:
         article["region"] = "Global"
+
+    # Pick country codes — all countries above threshold (article can relate to multiple)
+    full_text = f"{title} {snippet}"
+    country_scores = _score_text(full_text, _COUNTRY_RULES)
+    # Apply title boost
+    country_title = _score_text(title, _COUNTRY_RULES)
+    for label in country_title:
+        country_scores[label] = country_scores.get(label, 0.0) + country_title[label] * (_TITLE_BOOST - 1)
+    # Apply country hints from feed config (guarantees country tag for country-specific feeds)
+    hint = article.pop("_country_hint", None)
+    hints = article.pop("_country_hints", set())
+    if hint:
+        hints.add(hint)
+    for h in hints:
+        if h not in country_scores:
+            country_scores[h] = _COUNTRY_MIN_SCORE
+    countries = [c for c, s in country_scores.items() if s >= _COUNTRY_MIN_SCORE]
+    # Sort by score descending, cap at top 3
+    countries.sort(key=lambda c: country_scores[c], reverse=True)
+    article["countries"] = countries[:3]
+
+    # Build human-readable tags from country codes
+    article["tags"] = [_COUNTRY_NAMES.get(c, c) for c in article["countries"]]
 
 
 # ---------------------------------------------------------------------------
@@ -945,6 +1211,10 @@ class NewsService:
                     # Remap DB column names to API field names
                     result = []
                     for row in db_articles:
+                        countries_raw = row.get("countries", "")
+                        countries = [c for c in countries_raw.split(",") if c] if countries_raw else []
+                        tags_raw = row.get("tags", "")
+                        tags = [t for t in tags_raw.split(",") if t] if tags_raw else []
                         result.append({
                             "title": row["title"],
                             "link": row["url"],
@@ -953,6 +1223,8 @@ class NewsService:
                             "snippet": row.get("snippet", ""),
                             "category": row.get("category", "General"),
                             "region": row.get("region", "Global"),
+                            "countries": countries,
+                            "tags": tags,
                             "coverage_count": row.get("coverage_count", 1),
                         })
                     return result
@@ -963,7 +1235,13 @@ class NewsService:
         return _cached_articles[:limit]
 
     async def _fetch_all_feeds(self) -> list[dict]:
-        """Fetch all RSS feeds in parallel, merge, dedupe, sort."""
+        """Fetch all RSS feeds in batches, merge, dedupe, sort.
+
+        Feeds are fetched in batches of 15 with a brief pause between
+        batches to avoid rate limiting from Google News.
+        """
+        _BATCH_SIZE = 15
+        _BATCH_DELAY = 0.5  # seconds between batches
 
         async def _fetch_one(feed: dict) -> list[dict]:
             xml = await asyncio.to_thread(_fetch_url_sync, feed["url"])
@@ -971,34 +1249,47 @@ class NewsService:
                 return []
             return _parse_single_feed(xml, feed)
 
-        # Fetch all feeds concurrently
-        results = await asyncio.gather(
-            *[_fetch_one(f) for f in RSS_FEEDS],
-            return_exceptions=True,
-        )
-
         all_articles: list[dict] = []
-        for i, result in enumerate(results):
-            if isinstance(result, Exception):
-                logger.warning("Feed %s failed: %s",
-                               RSS_FEEDS[i]["default_source"], result)
-                continue
-            count = len(result)
-            if count > 0:
-                logger.debug("Got %d articles from %s",
-                             count, RSS_FEEDS[i]["default_source"])
-            all_articles.extend(result)
+
+        # Fetch in batches to avoid rate limiting
+        for batch_start in range(0, len(RSS_FEEDS), _BATCH_SIZE):
+            batch = RSS_FEEDS[batch_start:batch_start + _BATCH_SIZE]
+            results = await asyncio.gather(
+                *[_fetch_one(f) for f in batch],
+                return_exceptions=True,
+            )
+            for j, result in enumerate(results):
+                idx = batch_start + j
+                if isinstance(result, Exception):
+                    logger.warning("Feed %s failed: %s",
+                                   RSS_FEEDS[idx]["default_source"], result)
+                    continue
+                count = len(result)
+                if count > 0:
+                    logger.debug("Got %d articles from %s",
+                                 count, RSS_FEEDS[idx]["default_source"])
+                all_articles.extend(result)
+
+            # Brief pause between batches (skip after last batch)
+            if batch_start + _BATCH_SIZE < len(RSS_FEEDS):
+                await asyncio.sleep(_BATCH_DELAY)
 
         # --- Deduplicate with coverage scoring ---
         # First pass: exact title dedup + count sources per story
         key_to_article: dict[str, dict] = {}
         key_to_sources: dict[str, set[str]] = {}
+        key_to_hints: dict[str, set[str]] = {}
         for a in all_articles:
             key = _title_key(a["title"])
             if key not in key_to_article:
                 key_to_article[key] = a
                 key_to_sources[key] = set()
+                key_to_hints[key] = set()
             key_to_sources[key].add(a.get("source", ""))
+            # Merge country hints from duplicate articles
+            hint = a.get("_country_hint")
+            if hint:
+                key_to_hints[key].add(hint)
 
         # Second pass: fuzzy match — group articles with 45%+ word overlap
         keys = list(key_to_article.keys())
@@ -1022,14 +1313,19 @@ class NewsService:
                 if min_len > 0 and overlap / min_len >= 0.45:
                     merged[k2] = k1
                     key_to_sources[k1] |= key_to_sources.get(k2, set())
+                    key_to_hints[k1] |= key_to_hints.get(k2, set())
 
-        # Build final list with coverage_count
+        # Build final list with coverage_count + merged hints
         unique: list[dict] = []
         for key, article in key_to_article.items():
             if key in merged:
                 continue
             sources = key_to_sources.get(key, set())
             article["coverage_count"] = len(sources)
+            # Carry all merged country hints forward
+            hints = key_to_hints.get(key, set())
+            if hints:
+                article["_country_hints"] = hints
             unique.append(article)
 
         # Classify each article

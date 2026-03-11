@@ -103,7 +103,7 @@ export function App() {
   // Dev gallery: press Ctrl+Shift+D to toggle
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
         setShowDev((v) => !v);
       }
     };
@@ -142,7 +142,7 @@ export function App() {
           onBootComplete={handleBootComplete}
         />
       )}
-      {backendReady && (
+      {backendReady && booted && (
         <>
           <ModuleTabBar
             activeModule={activeModule}

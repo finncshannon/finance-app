@@ -23,12 +23,15 @@ def _default_data_dir() -> Path:
     if app_data:
         return Path(app_data)
 
-    # Windows: %LOCALAPPDATA%/FinanceApp
-    local_app_data = os.environ.get("LOCALAPPDATA")
-    if local_app_data:
-        return Path(local_app_data) / "FinanceApp"
+    import platform as _platform
+    if _platform.system() == "Windows":
+        local_app_data = os.environ.get("LOCALAPPDATA")
+        if local_app_data:
+            return Path(local_app_data) / "FinanceApp"
+    elif _platform.system() == "Darwin":
+        return Path.home() / "Library" / "Application Support" / "FinanceApp"
 
-    # Fallback: user home
+    # Linux / fallback
     return Path.home() / ".finance-app"
 
 

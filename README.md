@@ -17,6 +17,19 @@ Professional-grade desktop finance application for valuation modeling, stock scr
 - **Python** >= 3.11 (added to PATH)
 - **pip** packages: `pip install -r backend/requirements.txt`
 
+## Getting Started
+
+### macOS
+```bash
+chmod +x scripts/setup-mac.sh
+./scripts/setup-mac.sh
+```
+
+### Windows
+```cmd
+scripts\setup-win.bat
+```
+
 ## Quick Start
 
 ```bash

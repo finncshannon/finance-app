@@ -2,6 +2,9 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .header {
@@ -125,6 +128,7 @@
 /* Body */
 .body {
   padding: 0;
+  flex: 1;
 }
 
 /* Event list */

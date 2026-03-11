@@ -62,3 +62,19 @@ htmlcov/
 # User data files
 *.csv
 !**/tests/**/*.csv
+
+# Dev workflow — prompts, specs, working docs, session artifacts
+macOSport/
+specs/
+tasks/
+reference_code/
+review_reports/
+docs/
+Setup files/
+Setup files.zip
+CC_*.md
+PM1_*.md
+CUSTOMIZE_LOG.md
+UPDATE_LOG_*.md
+copy_reference_code.bat
+final_verification_results.json

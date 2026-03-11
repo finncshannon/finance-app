@@ -36,7 +36,7 @@ class NewsRepo:
 
         return await self.db.fetchall(
             f"""SELECT url, title, source, published_at, snippet,
-                       category, region, coverage_count
+                       category, region, countries, tags, coverage_count
                 FROM cache.news_articles
                 WHERE {where}
                 ORDER BY published_at DESC
@@ -52,6 +52,12 @@ class NewsRepo:
         now = datetime.now(timezone.utc).isoformat()
         rows = []
         for a in articles:
+            # Store countries as comma-separated ISO2 codes
+            countries = a.get("countries", [])
+            countries_str = ",".join(countries) if isinstance(countries, list) else str(countries)
+            # Store tags as comma-separated full names
+            tags = a.get("tags", [])
+            tags_str = ",".join(tags) if isinstance(tags, list) else str(tags)
             rows.append((
                 a.get("link", ""),
                 a.get("title", ""),
@@ -60,6 +66,8 @@ class NewsRepo:
                 a.get("snippet", ""),
                 a.get("category", "General"),
                 a.get("region", "Global"),
+                countries_str,
+                tags_str,
                 a.get("coverage_count", 1),
                 now,
             ))
@@ -70,11 +78,13 @@ class NewsRepo:
         await self.db.executemany(
             """INSERT INTO cache.news_articles
                    (url, title, source, published_at, snippet,
-                    category, region, coverage_count, fetched_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    category, region, countries, tags, coverage_count, fetched_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                ON CONFLICT(url) DO UPDATE SET
                    category = excluded.category,
                    region = excluded.region,
+                   countries = excluded.countries,
+                   tags = excluded.tags,
                    coverage_count = MAX(news_articles.coverage_count, excluded.coverage_count),
                    fetched_at = excluded.fetched_at""",
             rows,

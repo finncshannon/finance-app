@@ -33,7 +33,7 @@ echo ""
 # Step 4: Package with electron-builder
 echo "4. Packaging Electron app..."
 cd "$ROOT_DIR/electron"
-npx electron-builder --config electron-builder.yml --win --publish always
+npx electron-builder --config electron-builder.yml --mac --publish always
 echo ""
 
 echo "=== Release v$VERSION complete ==="

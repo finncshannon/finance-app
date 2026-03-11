@@ -59,29 +59,51 @@
   padding-bottom: var(--space-8);
 }
 
-/* Row 1: Market (left) + Portfolio (right) */
-.gridMarket { grid-column: 1; grid-row: 1; }
-.gridPortfolio { grid-column: 2; grid-row: 1; }
+/* Row 1: Two stacked columns */
+.gridColLeft {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.gridColRight {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.gridMarket { position: relative; overflow: hidden; }
+.gridPortfolio { position: relative; overflow: hidden; }
+.gridNews { position: relative; }
+.gridEvents { position: relative; overflow: hidden; flex: 1; }
 
 /* Row 2: Watchlist (full width) */
-.gridWatchlist { grid-column: 1 / -1; grid-row: 2; }
+.gridWatchlist { grid-column: 1 / -1; grid-row: 2; position: relative; overflow: hidden; }
 
-/* Row 3: Recent Models (left) + Events (right) */
-.gridModels { grid-column: 1; grid-row: 3; }
-.gridEvents { grid-column: 2; grid-row: 3; }
+/* Row 3: Recent Models (full width) */
+.gridModels { grid-column: 1 / -1; grid-row: 3; position: relative; overflow: hidden; }
 
 @media (max-width: 1200px) {
   .grid { grid-template-columns: 1fr; }
-  .gridMarket, .gridPortfolio, .gridWatchlist,
-  .gridModels, .gridEvents {
+  .gridColLeft, .gridColRight {
     grid-column: 1 / -1;
     grid-row: auto;
   }
+  .gridWatchlist, .gridModels {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .gridNews { min-height: 0; }
 }
 
 /* ── Widget Base ── */
 .widget {
-  background: var(--bg-secondary);
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -91,7 +113,7 @@
 }
 
 .widget:hover {
-  box-shadow: 0 0 14px var(--glow-color-hover, rgba(59,130,246,0.15));
+  box-shadow: 0 0 12px var(--glow-color-hover, rgba(59,130,246,0.12));
 }
 
 @keyframes ambientPulse {
@@ -132,31 +154,128 @@
   padding: var(--space-4);
 }
 
-/* ── Widget entry animations ── */
+/* ── Widget boot-up: 3-stage reveal ── */
 
+/* Hidden — not yet online */
 .widgetHidden {
   opacity: 0;
-  transform: translateY(12px) scale(0.98);
-  box-shadow: none;
 }
 
-.widgetVisible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transition: opacity 400ms ease-out, transform 400ms ease-out, box-shadow 400ms ease-out;
-  animation: widgetPowerOn 0.8s ease-out;
+/* Stage 0: Empty shell — backplate pops in */
+.widgetShell {
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-subtle, #262626);
+  border-radius: var(--radius-lg);
+  min-height: 120px;
+  box-shadow: 0 0 6px var(--glow-color, rgba(59,130,246,0.08));
+  animation: shellPop 0.3s ease-out forwards;
 }
 
-@keyframes widgetPowerOn {
+.widgetShell > * {
+  opacity: 0 !important;
+}
+
+@keyframes shellPop {
   0% {
-    box-shadow: 0 0 0px var(--glow-color, rgba(59,130,246,0.08));
-  }
-  40% {
-    box-shadow: 0 0 20px var(--glow-color-strong, rgba(59,130,246,0.25));
+    opacity: 0;
+    transform: scale(0.95);
   }
   100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Stage 1: Header populates — widget name visible, body still hidden */
+.widgetHeaderOn {
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-subtle, #262626);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 6px var(--glow-color, rgba(59,130,246,0.08));
+  opacity: 1;
+}
+
+.widgetHeaderOn > * > *:first-child {
+  animation: lineBuild 0.3s ease-out forwards;
+}
+
+.widgetHeaderOn > * > *:nth-child(n+2) {
+  opacity: 0 !important;
+}
+
+@keyframes lineBuild {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0% 0 0);
+    opacity: 1;
+  }
+}
+
+/* Stage 2: Data populates — numbers stream in, border settles */
+.widgetFullOn {
+  opacity: 1;
+  animation: borderSettle 0.8s ease-out forwards;
+}
+
+.widgetFullOn > * > *:first-child {
+  opacity: 1;
+}
+
+.widgetFullOn > * > *:nth-child(n+2) {
+  animation: dataStreamIn 0.8s steps(20) forwards;
+}
+
+@keyframes borderSettle {
+  0% {
+    border-color: var(--border-subtle);
     box-shadow: 0 0 8px var(--glow-color, rgba(59,130,246,0.08));
   }
+  100% {
+    border-color: var(--border-subtle);
+    box-shadow: 0 0 8px var(--glow-color, rgba(59,130,246,0.08));
+  }
+}
+
+@keyframes dataStreamIn {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0% 0 0);
+  }
+}
+
+/* Vertical variant — data reveals top to bottom */
+.widgetFullOnVertical {
+  opacity: 1;
+  animation: borderSettle 0.8s ease-out forwards;
+}
+
+.widgetFullOnVertical > * > *:first-child {
+  opacity: 1;
+}
+
+.widgetFullOnVertical > * > *:nth-child(n+2) {
+  animation: dataStreamDown 0.8s steps(20) forwards;
+}
+
+@keyframes dataStreamDown {
+  0% {
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    clip-path: inset(0 0 0% 0);
+  }
+}
+
+/* Post-animation steady state — no animations, no overflow clip */
+.widgetReady {
+  opacity: 1;
 }
 
 /* ── Refresh spinner ── */

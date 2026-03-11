@@ -395,6 +395,9 @@ export function NewsTab({ ticker }: Props) {
                 <span className={styles.source}>{article.source}</span>
                 <span className={styles.dot}>&bull;</span>
                 <span className={styles.timeAgo}>{timeAgo(article.published)}</span>
+                {article.tags && article.tags.length > 0 && article.tags.map((tag) => (
+                  <span key={tag} className={styles.tag}>{tag}</span>
+                ))}
                 {article.category && article.category !== 'General' && (
                   <>
                     <span className={styles.dot}>&bull;</span>

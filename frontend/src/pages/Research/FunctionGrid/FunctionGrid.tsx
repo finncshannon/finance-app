@@ -17,6 +17,7 @@ const FUNCTIONS: FunctionDef[] = [
   { id: 'profile', code: 'DES', label: 'Description', description: 'Company overview, key stats, events' },
   { id: 'peers', code: 'COMP', label: 'Peer Comparison', description: 'Comparable companies and relative metrics' },
   { id: 'news', code: 'NEWS', label: 'News & Headlines', description: 'Top stories, company news, keyword search' },
+  { id: 'market', code: 'MRKT', label: 'Market Performance', description: 'Index and sector performance overview' },
 ];
 
 interface Props {

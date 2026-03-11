@@ -8,6 +8,11 @@
  * Usage: node scripts/bundle-python.js
  */
 
+if (process.platform !== 'win32') {
+  console.log('[bundle-python] Skipping — macOS/Linux uses system Python');
+  process.exit(0);
+}
+
 const fs = require('fs');
 const path = require('path');
 const https = require('https');

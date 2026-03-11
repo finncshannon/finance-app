@@ -24,6 +24,7 @@ from routers import (
     companies_router,
     dashboard_router,
     export_router,
+    market_router,
     models_router,
     news_router,
     portfolio_router,
@@ -434,6 +435,7 @@ app.include_router(portfolio_router.router)
 app.include_router(research_router.router)
 app.include_router(news_router.router)
 app.include_router(dashboard_router.router)
+app.include_router(market_router.router)
 app.include_router(settings_router.router)
 app.include_router(export_router.router)
 app.include_router(universe_router.router)

@@ -14,6 +14,7 @@ import { ProfileTab } from './Profile/ProfileTab';
 import { PeersTab } from './Peers/PeersTab';
 import { NewsTab } from './News/NewsTab';
 import { PriceChart } from './PriceChart/PriceChart';
+import { MarketPerformanceTab } from './MarketPerformance/MarketPerformanceTab';
 import styles from './ResearchPage.module.css';
 
 const VIEW_LABELS: Record<string, string> = {
@@ -24,6 +25,7 @@ const VIEW_LABELS: Record<string, string> = {
   profile: 'DES  Description',
   peers: 'COMP  Peer Comparison',
   news: 'NEWS  News & Headlines',
+  market: 'MRKT  Market Performance',
 };
 
 export function ResearchPage() {
@@ -80,6 +82,8 @@ export function ResearchPage() {
   const isHome = activeSubTab === 'home';
 
   const renderView = () => {
+    // Market tab doesn't require a ticker
+    if (activeSubTab === 'market') return <MarketPerformanceTab />;
     if (!selectedTicker) return null;
     switch (activeSubTab) {
       case 'home':
@@ -133,7 +137,9 @@ export function ResearchPage() {
 
       {/* Content */}
       <div className={styles.content}>
-        {loading && !profile ? (
+        {activeSubTab === 'market' ? (
+          renderView()
+        ) : loading && !profile ? (
           <div className={styles.loading}>Loading...</div>
         ) : loadError ? (
           <div className={styles.errorState}>

@@ -147,6 +147,8 @@ export interface NewsArticle {
   coverage_count?: number;
   category?: string;
   region?: string;
+  countries?: string[];
+  tags?: string[];
 }
 
 // ─── Formatters ──────────────────────────────────────────
