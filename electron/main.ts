@@ -16,7 +16,7 @@ const BACKEND_HOST = '127.0.0.1';
 const BACKEND_PORT = 8000;
 const HEALTH_URL = `http://${BACKEND_HOST}:${BACKEND_PORT}/api/v1/system/health`;
 const HEALTH_POLL_INTERVAL_MS = 100;
-const BACKEND_START_TIMEOUT_MS = 30000;
+const BACKEND_START_TIMEOUT_MS = 60000;
 const SHUTDOWN_GRACE_PERIOD_MS = 2000;
 const DEV_SERVER_URL = 'http://localhost:5174';
 
@@ -81,7 +81,7 @@ function checkPython(): PythonCheckResult {
   // 2. Fall back to system Python
   const candidates = process.platform === 'win32'
     ? ['py -3', 'python', 'python3']
-    : ['python3', 'python'];
+    : ['/opt/homebrew/opt/python@3.11/libexec/bin/python3', '/opt/homebrew/bin/python3.11', 'python3.11', 'python3', 'python'];
 
   for (const cmd of candidates) {
     try {

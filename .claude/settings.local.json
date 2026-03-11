@@ -126,7 +126,13 @@
       "Bash(TASKKILL //F //PID 28336 2>&1)",
       "Bash(TASKKILL //F //PID 33476 2>&1 && TASKKILL //F //PID 28336 2>&1 && TASKKILL //F //PID 39140 2>&1; sleep 5 && netstat -ano | grep \":800[01].*LISTEN\" || echo \"All clear\")",
       "Bash(for pid:*)",
-      "Bash(TASKKILL //F //PID 4272 2>&1 && TASKKILL //F //PID 27896 2>&1 && TASKKILL //F //PID 14300 2>&1)"
+      "Bash(TASKKILL //F //PID 4272 2>&1 && TASKKILL //F //PID 27896 2>&1 && TASKKILL //F //PID 14300 2>&1)",
+      "Bash(brew list:*)",
+      "Bash(pkill -f \"electron dist/main.js\" 2>/dev/null; pkill -f \"Electron\" 2>/dev/null; echo \"done\")",
+      "Bash(pkill -f \"electron dist/main.js\" 2>/dev/null; pkill -f \"Electron\" 2>/dev/null; echo \"killed\")",
+      "Bash(/opt/homebrew/opt/python@3.11/libexec/bin/python3 -m pip install -r /Users/finnshannon/finance-app/backend/requirements.txt)",
+      "Bash(/opt/homebrew/opt/python@3.11/libexec/bin/python3 -c \"\nimport yfinance as yf\nt = yf.Ticker\\('XLK'\\)\ninfo = t.info\nprint\\('Keys:', len\\(info\\)\\)\nprint\\('regularMarketPrice:', info.get\\('regularMarketPrice'\\)\\)\nprint\\('currentPrice:', info.get\\('currentPrice'\\)\\)\nprint\\('previousClose:', info.get\\('previousClose'\\)\\)\n\" 2>&1)",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/companies/SPY/historical?period=3mo&interval=1d\" 2>&1 | /opt/homebrew/opt/python@3.11/libexec/bin/python3 -c \"\nimport sys, json\nd = json.load\\(sys.stdin\\)\nif d.get\\('success'\\):\n    bars = d.get\\('data', []\\)\n    print\\(f'Got {len\\(bars\\)} bars'\\)\n    if bars: print\\(f'First: {bars[0]}'\\)\nelse:\n    print\\(f'Error: {d.get\\(\\\\\"error\\\\\", {}\\).get\\(\\\\\"message\\\\\", \\\\\"unknown\\\\\"\\)}'\\)\n\" 2>&1)"
     ]
   },
   "enableAllProjectMcpServers": true,

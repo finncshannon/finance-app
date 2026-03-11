@@ -167,11 +167,11 @@ class UniverseHydrationService:
     async def _needs_hydration(self, ticker: str) -> bool:
         """Return True if ticker has no market_data or data is older than FINANCIAL_STALE_SECONDS."""
         md_row = await self.db.fetchone(
-            "SELECT fetched_at FROM cache.market_data WHERE ticker = ?", (ticker,)
+            "SELECT updated_at FROM cache.market_data WHERE ticker = ?", (ticker,)
         )
-        if md_row and md_row.get("fetched_at"):
+        if md_row and md_row.get("updated_at"):
             try:
-                fetched = datetime.fromisoformat(md_row["fetched_at"])
+                fetched = datetime.fromisoformat(md_row["updated_at"])
                 age = (datetime.now(timezone.utc) - fetched).total_seconds()
                 if age < FINANCIAL_STALE_SECONDS:
                     return False

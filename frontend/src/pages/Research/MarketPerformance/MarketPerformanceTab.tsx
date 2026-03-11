@@ -49,7 +49,8 @@ function fmtPrice(val: number | null): string {
   return val.toFixed(2);
 }
 
-function fmtChg(val: number): string {
+function fmtChg(val: number | null): string {
+  if (val === null || val === undefined) return '--';
   const sign = val >= 0 ? '+' : '';
   return `${sign}${val.toFixed(2)}`;
 }
@@ -385,7 +386,7 @@ export function MarketPerformanceTab() {
                             <span className={s.holdingTicker}>{h.ticker}</span>
                             <span className={s.holdingName}>{h.name}</span>
                           </div>
-                          <span className={s.holdingWeight}>{h.weight_pct.toFixed(1)}%</span>
+                          <span className={s.holdingWeight}>{h.weight_pct != null ? `${h.weight_pct.toFixed(1)}%` : '--'}</span>
                           <div className={s.holdingPrice}>
                             <span>{h.current_price !== null ? fmtPrice(h.current_price) : '--'}</span>
                             {h.day_change_pct !== null && (

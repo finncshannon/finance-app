@@ -103,7 +103,6 @@ const LABEL_OFFSETS: Record<string, [number, number]> = {
   AR: [14, -18],
   CL: [8, -40],
   CO: [0, 0],
-  CL: [0, 0],
   // Middle East & Africa
   ZA: [-18, 28],
   NG: [-8, 18],
@@ -744,9 +743,9 @@ export function WorldMap({ items, usChange, onCountryClick, activeContinent = 'A
           <span className={s.tooltipName}>{tooltip.name}</span>
           <span
             className={s.tooltipPct}
-            style={{ color: tooltip.pct >= 0 ? 'var(--color-positive)' : 'var(--color-negative)' }}
+            style={{ color: (tooltip.pct ?? 0) >= 0 ? 'var(--color-positive)' : 'var(--color-negative)' }}
           >
-            {tooltip.pct >= 0 ? '+' : ''}{(tooltip.pct * 100).toFixed(2)}%
+            {tooltip.pct != null ? `${tooltip.pct >= 0 ? '+' : ''}${(tooltip.pct * 100).toFixed(2)}%` : '--'}
           </span>
         </div>
       )}
